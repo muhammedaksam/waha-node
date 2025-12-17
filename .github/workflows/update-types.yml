@@ -31,6 +31,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -119,6 +120,10 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
         run: pnpm run generate:types
 
+      - name: Format code
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        run: pnpm run format
+
       - name: Get WAHA version
         if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
         id: waha_version
@@ -169,7 +174,4 @@ jobs:
             # or
             yarn add @muhammedaksam/waha-node@${{ steps.bump_version.outputs.new_version }}
             ```
-
-            ## OpenAPI Spec SHA
-            `${{ steps.new_sha.outputs.sha }}`
-          generate_release_notes: false
+          generate_release_notes: true
