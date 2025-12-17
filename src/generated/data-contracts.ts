@@ -1624,7 +1624,6 @@ export interface WAHAWebhookSessionStatus {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -1684,7 +1683,6 @@ export interface WAHAWebhookMessage {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -1791,7 +1789,6 @@ export interface WAHAWebhookMessageReaction {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -1851,7 +1848,6 @@ export interface WAHAWebhookMessageAny {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -1920,7 +1916,7 @@ export interface WAHAWebhookMessageAck {
   /** @example "WEBJS" */
   engine: 'WEBJS' | 'NOWEB' | 'GOWS'
   /**
-   * Receive events when server or recipient gets the message, read or played it (contacts only).
+   * Receive events when server or recipient gets the message, read or played it.
    * @default "message.ack"
    */
   event:
@@ -1929,67 +1925,6 @@ export interface WAHAWebhookMessageAck {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
-    | 'message.waiting'
-    | 'message.revoked'
-    | 'message.edited'
-    | 'state.change'
-    | 'group.join'
-    | 'group.leave'
-    | 'group.v2.join'
-    | 'group.v2.leave'
-    | 'group.v2.update'
-    | 'group.v2.participants'
-    | 'presence.update'
-    | 'poll.vote'
-    | 'poll.vote.failed'
-    | 'chat.archive'
-    | 'call.received'
-    | 'call.accepted'
-    | 'call.rejected'
-    | 'label.upsert'
-    | 'label.deleted'
-    | 'label.chat.added'
-    | 'label.chat.deleted'
-    | 'event.response'
-    | 'event.response.failed'
-    | 'engine.event'
-  payload: WAMessageAckBody
-  me?: MeInfo
-  environment: WAHAEnvironment
-}
-
-export interface WAHAWebhookMessageAckGroup {
-  /**
-   * Unique identifier for the event - lower case ULID format. https://github.com/ulid/spec
-   * @example "evt_01aaaaaaaaaaaaaaaaaaaaaaaa"
-   */
-  id: string
-  /**
-   * Unix timestamp (ms) for when the event was created.
-   * @example 1634567890123
-   */
-  timestamp: number
-  /** @example "default" */
-  session: string
-  /**
-   * Metadata for the session.
-   * @example {"user.id":"123","user.email":"email@example.com"}
-   */
-  metadata?: object
-  /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
-  /**
-   * Receive events when participants in a group read or play messages.
-   * @default "message.ack.group"
-   */
-  event:
-    | 'session.status'
-    | 'message'
-    | 'message.reaction'
-    | 'message.any'
-    | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2060,7 +1995,6 @@ export interface WAHAWebhookMessageRevoked {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2185,7 +2119,6 @@ export interface WAHAWebhookMessageEdited {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2276,7 +2209,6 @@ export interface WebhookGroupV2Join {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2351,7 +2283,6 @@ export interface WebhookGroupV2Leave {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2421,7 +2352,6 @@ export interface WebhookGroupV2Update {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2494,7 +2424,6 @@ export interface WebhookGroupV2Participants {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2554,7 +2483,6 @@ export interface WAHAWebhookPresenceUpdate {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2654,7 +2582,6 @@ export interface WAHAWebhookPollVote {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2714,7 +2641,6 @@ export interface WAHAWebhookPollVoteFailed {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2781,7 +2707,6 @@ export interface WAHAWebhookChatArchive {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2855,7 +2780,6 @@ export interface WAHAWebhookCallReceived {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2915,7 +2839,6 @@ export interface WAHAWebhookCallAccepted {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -2975,7 +2898,6 @@ export interface WAHAWebhookCallRejected {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3035,7 +2957,6 @@ export interface WAHAWebhookLabelUpsert {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3095,7 +3016,6 @@ export interface WAHAWebhookLabelDeleted {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3169,7 +3089,6 @@ export interface WAHAWebhookLabelChatAdded {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3229,7 +3148,6 @@ export interface WAHAWebhookLabelChatDeleted {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3334,7 +3252,6 @@ export interface WAHAWebhookEventResponse {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3394,7 +3311,6 @@ export interface WAHAWebhookEventResponseFailed {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3459,7 +3375,6 @@ export interface WAHAWebhookEngineEvent {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3520,7 +3435,6 @@ export interface WAHAWebhookGroupJoin {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3581,7 +3495,6 @@ export interface WAHAWebhookGroupLeave {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'
@@ -3642,7 +3555,6 @@ export interface WAHAWebhookStateChange {
     | 'message.reaction'
     | 'message.any'
     | 'message.ack'
-    | 'message.ack.group'
     | 'message.waiting'
     | 'message.revoked'
     | 'message.edited'

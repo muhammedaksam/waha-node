@@ -7,8 +7,6 @@
 
 TypeScript SDK for [WAHA (WhatsApp HTTP API)](https://github.com/devlikeapro/waha) - auto-generated from OpenAPI spec with full type safety and axios-based client.
 
-> **Note:** Check `package.json` → `wahaVersion` to see which WAHA version the types were generated from.
-
 ## Installation
 
 ```bash

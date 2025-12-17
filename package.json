@@ -1,7 +1,6 @@
 {
   "name": "@muhammedaksam/waha-node",
-  "version": "0.1.1",
-  "wahaVersion": "2025.12.2",
+  "version": "2025.12.1",
   "type": "module",
   "description": "Node.js TypeScript SDK for WAHA (WhatsApp HTTP API) - auto-generated from OpenAPI spec",
   "main": "dist/index.cjs.js",
@@ -18,7 +17,7 @@
     "dist"
   ],
   "scripts": {
-    "fetch:openapi": "curl -u ${SWAGGER_USER:-admin}:${SWAGGER_PASSWORD:-admin} -o openapi.json ${WAHA_URL:-http://localhost:3000}/-json",
+    "fetch:openapi": "curl -u ${WHATSAPP_SWAGGER_USERNAME:-WHATSAPP_SWAGGER_USERNAME}:${WHATSAPP_SWAGGER_PASSWORD:-WHATSAPP_SWAGGER_PASSWORD} -o openapi.json ${WAHA_URL:-http://localhost:3000}/-json && prettier --write openapi.json",
     "generate:types": "npx swagger-typescript-api generate -p openapi.json -o src/generated -n api.ts --axios --modular --module-name-first-tag && npx tsx scripts/clean-generated.ts",
     "generate": "pnpm run fetch:openapi && pnpm run generate:types",
     "build": "rollup -c",
@@ -28,6 +27,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "rm -rf dist",
+    "check": "pnpm run lint && pnpm run format:check",
+    "fix": "pnpm run lint:fix && pnpm run format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "tsx example/index.ts",
     "docs": "typedoc src/index.ts --out docs --excludePrivate --excludeInternal"

@@ -154,7 +154,6 @@ import {
   WAHAWebhookMessageAny,
   WAMessageAckBody,
   WAHAWebhookMessageAck,
-  WAHAWebhookMessageAckGroup,
   WAMessageRevokedBody,
   WAHAWebhookMessageRevoked,
   WAMessageEditedBody,

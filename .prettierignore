@@ -1,6 +1,4 @@
 dist/
 node_modules/
 coverage/
-src/generated/
-openapi.json
 pnpm-lock.yaml

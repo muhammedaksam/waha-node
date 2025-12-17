@@ -14,8 +14,11 @@ on:
 
 env:
   WAHA_URL: http://localhost:3000
-  SWAGGER_USER: admin
-  SWAGGER_PASSWORD: workflowpassword123
+  WHATSAPP_SWAGGER_USERNAME: WHATSAPP_SWAGGER_USERNAME
+  WHATSAPP_SWAGGER_PASSWORD: WHATSAPP_SWAGGER_PASSWORD
+  WAHA_DASHBOARD_USERNAME: WAHA_DASHBOARD_USERNAME
+  WAHA_DASHBOARD_PASSWORD: WAHA_DASHBOARD_PASSWORD
+  WAHA_API_KEY: WAHA_API_KEY
 
 jobs:
   update-types:
@@ -51,18 +54,18 @@ jobs:
           docker run -d \
             --name waha \
             -p 3000:3000 \
-            -e WHATSAPP_SWAGGER_USERNAME=${{ env.SWAGGER_USER }} \
-            -e WHATSAPP_SWAGGER_PASSWORD=${{ env.SWAGGER_PASSWORD }} \
-            -e WAHA_DASHBOARD_USERNAME=${{ env.SWAGGER_USER }} \
-            -e WAHA_DASHBOARD_PASSWORD=${{ env.SWAGGER_PASSWORD }} \
-            -e WAHA_API_KEY=workflowapikey123 \
+            -e WHATSAPP_SWAGGER_USERNAME=${{ env.WHATSAPP_SWAGGER_USERNAME }} \
+            -e WHATSAPP_SWAGGER_PASSWORD=${{ env.WHATSAPP_SWAGGER_PASSWORD }} \
+            -e WAHA_DASHBOARD_USERNAME=${{ env.WAHA_DASHBOARD_USERNAME }} \
+            -e WAHA_DASHBOARD_PASSWORD=${{ env.WAHA_DASHBOARD_PASSWORD }} \
+            -e WAHA_API_KEY=${{ env.WAHA_API_KEY }} \
             devlikeapro/waha:latest
 
       - name: Wait for WAHA to be ready
         run: |
           echo "Waiting for WAHA to start..."
           for i in {1..60}; do
-            if curl -s -u ${{ env.SWAGGER_USER }}:${{ env.SWAGGER_PASSWORD }} ${{ env.WAHA_URL }}/-json > /dev/null 2>&1; then
+            if curl -s -u ${{ env.WHATSAPP_SWAGGER_USERNAME }}:${{ env.WHATSAPP_SWAGGER_PASSWORD }} ${{ env.WAHA_URL }}/-json > /dev/null 2>&1; then
               echo "WAHA is ready!"
               break
             fi
@@ -78,7 +81,7 @@ jobs:
       - name: Fetch OpenAPI spec
         run: |
           # Try with provided credentials first, fallback to extracting from logs
-          if ! curl -f -s -u ${{ env.SWAGGER_USER }}:${{ env.SWAGGER_PASSWORD }} -o openapi.json ${{ env.WAHA_URL }}/-json; then
+          if ! curl -f -s -u ${{ env.WHATSAPP_SWAGGER_USERNAME }}:${{ env.WHATSAPP_SWAGGER_PASSWORD }} -o openapi.json ${{ env.WAHA_URL }}/-json; then
             echo "Fixed credentials failed, extracting from logs..."
             SWAGGER_PASSWORD=$(docker logs waha 2>&1 | grep "WHATSAPP_SWAGGER_PASSWORD=" | tail -1 | cut -d'=' -f2)
             curl -u admin:$SWAGGER_PASSWORD -o openapi.json ${{ env.WAHA_URL }}/-json
@@ -88,6 +91,9 @@ jobs:
       - name: Stop WAHA container
         if: always()
         run: docker stop waha || true
+
+      - name: Format OpenAPI spec
+        run: npx prettier --write openapi.json
 
       - name: Get new OpenAPI SHA
         id: new_sha
@@ -121,23 +127,18 @@ jobs:
           echo "waha_version=$VERSION" >> $GITHUB_OUTPUT
           echo "WAHA version: $VERSION"
 
-      - name: Bump package version and update wahaVersion
+      - name: Update package version
         if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
         id: bump_version
         run: |
-          # Get current version
-          CURRENT=$(jq -r '.version' package.json)
-          echo "Current version: $CURRENT"
+          VERSION="${{ steps.waha_version.outputs.waha_version }}"
+          echo "New version: $VERSION"
 
-          # Bump patch version
-          NEW_VERSION=$(echo $CURRENT | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-          echo "New version: $NEW_VERSION"
-
-          # Update package.json with new version and wahaVersion
-          jq ".version = \"$NEW_VERSION\" | .wahaVersion = \"${{ steps.waha_version.outputs.waha_version }}\"" package.json > package.json.tmp
+          # Update package.json with new version
+          jq ".version = \"$VERSION\"" package.json > package.json.tmp
           mv package.json.tmp package.json
 
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit and tag
         if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
