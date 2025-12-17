@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "fetch:openapi": "curl -u ${WHATSAPP_SWAGGER_USERNAME:-WHATSAPP_SWAGGER_USERNAME}:${WHATSAPP_SWAGGER_PASSWORD:-WHATSAPP_SWAGGER_PASSWORD} -o openapi.json ${WAHA_URL:-http://localhost:3000}/-json && prettier --write openapi.json",
-    "generate:types": "npx swagger-typescript-api generate -p openapi.json -o src/generated -n api.ts --axios --modular --module-name-first-tag && npx tsx scripts/clean-generated.ts",
+    "generate:types": "npx swagger-typescript-api generate -p openapi.json -o src/generated -n api.ts --axios --modular --module-name-first-tag && npx tsx scripts/clean-generated.ts && pnpm run fix",
     "generate": "pnpm run fetch:openapi && pnpm run generate:types",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
