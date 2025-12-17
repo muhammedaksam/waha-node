@@ -99,10 +99,38 @@ async function clean() {
 
   const clientContent = `
 import { ApiConfig } from './generated/http-client';
+import type { AxiosInstance } from 'axios';
 ${clientImports}
 
 export class WahaClient {
   ${clientProperties}
+
+  /**
+   * Get the underlying axios instance.
+   * Useful for adding interceptors for logging, authentication, or custom headers.
+   * 
+   * @example
+   * \`\`\`typescript
+   * const client = new WahaClient('http://localhost:3000', 'api-key')
+   * 
+   * // Add request interceptor
+   * client.httpClient?.interceptors.request.use((config) => {
+   *   console.log('Request:', config.method, config.url)
+   *   return config
+   * })
+   * 
+   * // Add response interceptor  
+   * client.httpClient?.interceptors.response.use((response) => {
+   *   console.log('Response:', response.status, response.config.url)
+   *   return response
+   * })
+   * \`\`\`
+   */
+  public get httpClient(): AxiosInstance | undefined {
+    // All controllers extend HttpClient and share the same axios instance
+    // We can get it from any controller (sessions is always available)
+    return (this.sessions as unknown as { instance: AxiosInstance }).instance;
+  }
 
   constructor(baseUrl: string, token?: string);
   constructor(config: ApiConfig);
