@@ -1,0 +1,86 @@
+{
+  "name": "@muhammedaksam/waha-node",
+  "version": "0.1.0",
+  "wahaVersion": "2025.12.2",
+  "type": "module",
+  "description": "Node.js TypeScript SDK for WAHA (WhatsApp HTTP API) - auto-generated from OpenAPI spec",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "fetch:openapi": "curl -u ${SWAGGER_USER:-admin}:${SWAGGER_PASSWORD:-admin} -o openapi.json ${WAHA_URL:-http://localhost:3000}/-json",
+    "generate:types": "npx swagger-typescript-api generate -p openapi.json -o src/generated -n api.ts --axios --modular --module-name-first-tag && npx tsx scripts/clean-generated.ts",
+    "generate": "pnpm run fetch:openapi && pnpm run generate:types",
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "tsx example/index.ts",
+    "docs": "typedoc src/index.ts --out docs --excludePrivate --excludeInternal"
+  },
+  "keywords": [
+    "waha",
+    "whatsapp",
+    "whatsapp-api",
+    "http-api",
+    "typescript",
+    "nodejs",
+    "sdk"
+  ],
+  "author": "Muhammed Mustafa AKŞAM <info@muhammedaksam.com.tr> (https://github.com/muhammedaksam)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muhammedaksam/waha-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/muhammedaksam/waha-node/issues"
+  },
+  "homepage": "https://github.com/muhammedaksam/waha-node#readme",
+  "dependencies": {
+    "axios": "^1.13.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.5.0",
+    "jiti": "^2.6.1",
+    "prettier": "^3.7.4",
+    "rollup": "^4.53.5",
+    "rollup-plugin-dts": "^6.3.0",
+    "swagger-typescript-api": "^13.2.16",
+    "tslib": "^2.8.1",
+    "tsx": "^4.21.0",
+    "typedoc": "^0.28.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

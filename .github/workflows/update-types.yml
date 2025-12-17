@@ -1,0 +1,174 @@
+name: Update OpenAPI Types
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: 'Force a new release even if no changes'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  WAHA_URL: http://localhost:3000
+  SWAGGER_USER: admin
+  SWAGGER_PASSWORD: workflowpassword123
+
+jobs:
+  update-types:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          node-version: '20'
+
+      - name: Get current OpenAPI SHA
+        id: old_sha
+        run: |
+          if [ -f openapi.json ]; then
+            SHA=$(sha256sum openapi.json | cut -d' ' -f1)
+            echo "sha=$SHA" >> $GITHUB_OUTPUT
+            echo "Current OpenAPI SHA: $SHA"
+          else
+            echo "sha=none" >> $GITHUB_OUTPUT
+            echo "No existing openapi.json"
+          fi
+
+      - name: Start WAHA container
+        run: |
+          docker run -d \
+            --name waha \
+            -p 3000:3000 \
+            -e WHATSAPP_SWAGGER_USERNAME=${{ env.SWAGGER_USER }} \
+            -e WHATSAPP_SWAGGER_PASSWORD=${{ env.SWAGGER_PASSWORD }} \
+            -e WAHA_DASHBOARD_USERNAME=${{ env.SWAGGER_USER }} \
+            -e WAHA_DASHBOARD_PASSWORD=${{ env.SWAGGER_PASSWORD }} \
+            -e WAHA_API_KEY=workflowapikey123 \
+            devlikeapro/waha:latest
+
+      - name: Wait for WAHA to be ready
+        run: |
+          echo "Waiting for WAHA to start..."
+          for i in {1..60}; do
+            if curl -s -u ${{ env.SWAGGER_USER }}:${{ env.SWAGGER_PASSWORD }} ${{ env.WAHA_URL }}/-json > /dev/null 2>&1; then
+              echo "WAHA is ready!"
+              break
+            fi
+            # Also check logs for ready message
+            if docker logs waha 2>&1 | grep -q "WhatsApp HTTP API is running"; then
+              sleep 2
+              echo "WAHA started, checking API..."
+            fi
+            echo "Waiting... ($i/60)"
+            sleep 2
+          done
+
+      - name: Fetch OpenAPI spec
+        run: |
+          # Try with provided credentials first, fallback to extracting from logs
+          if ! curl -f -s -u ${{ env.SWAGGER_USER }}:${{ env.SWAGGER_PASSWORD }} -o openapi.json ${{ env.WAHA_URL }}/-json; then
+            echo "Fixed credentials failed, extracting from logs..."
+            SWAGGER_PASSWORD=$(docker logs waha 2>&1 | grep "WHATSAPP_SWAGGER_PASSWORD=" | tail -1 | cut -d'=' -f2)
+            curl -u admin:$SWAGGER_PASSWORD -o openapi.json ${{ env.WAHA_URL }}/-json
+          fi
+          echo "OpenAPI spec size: $(wc -c < openapi.json) bytes"
+
+      - name: Stop WAHA container
+        if: always()
+        run: docker stop waha || true
+
+      - name: Get new OpenAPI SHA
+        id: new_sha
+        run: |
+          SHA=$(sha256sum openapi.json | cut -d' ' -f1)
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "New OpenAPI SHA: $SHA"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ "${{ steps.old_sha.outputs.sha }}" = "${{ steps.new_sha.outputs.sha }}" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected (SHA match)"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected!"
+            echo "Old SHA: ${{ steps.old_sha.outputs.sha }}"
+            echo "New SHA: ${{ steps.new_sha.outputs.sha }}"
+          fi
+
+      - name: Generate types
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        run: pnpm run generate:types
+
+      - name: Get WAHA version
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        id: waha_version
+        run: |
+          VERSION=$(jq -r '.info.version // "unknown"' openapi.json)
+          echo "waha_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "WAHA version: $VERSION"
+
+      - name: Bump package version and update wahaVersion
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        id: bump_version
+        run: |
+          # Get current version
+          CURRENT=$(jq -r '.version' package.json)
+          echo "Current version: $CURRENT"
+
+          # Bump patch version
+          NEW_VERSION=$(echo $CURRENT | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "New version: $NEW_VERSION"
+
+          # Update package.json with new version and wahaVersion
+          jq ".version = \"$NEW_VERSION\" | .wahaVersion = \"${{ steps.waha_version.outputs.waha_version }}\"" package.json > package.json.tmp
+          mv package.json.tmp package.json
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit and tag
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add openapi.json src/generated/ package.json
+          git commit -m "chore: update types for WAHA ${{ steps.waha_version.outputs.waha_version }}"
+          git tag -a "v${{ steps.bump_version.outputs.new_version }}" -m "Release v${{ steps.bump_version.outputs.new_version }} for WAHA ${{ steps.waha_version.outputs.waha_version }}"
+          git push --follow-tags
+
+      - name: Create GitHub Release
+        if: steps.changes.outputs.has_changes == 'true' || inputs.force_release == true
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump_version.outputs.new_version }}
+          name: v${{ steps.bump_version.outputs.new_version }}
+          body: |
+            ## WAHA Version
+            This release was generated from WAHA version **${{ steps.waha_version.outputs.waha_version }}**
+
+            ## Installation
+            ```bash
+            npm install @muhammedaksam/waha-node@${{ steps.bump_version.outputs.new_version }}
+            # or
+            pnpm add @muhammedaksam/waha-node@${{ steps.bump_version.outputs.new_version }}
+            # or
+            yarn add @muhammedaksam/waha-node@${{ steps.bump_version.outputs.new_version }}
+            ```
+
+            ## OpenAPI Spec SHA
+            `${{ steps.new_sha.outputs.sha }}`
+          generate_release_notes: false
