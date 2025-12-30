@@ -132,6 +132,11 @@ export interface IgnoreConfig {
   broadcast?: boolean
 }
 
+export interface ClientSessionConfig {
+  deviceName?: string
+  browserName?: string
+}
+
 export interface NowebStoreConfig {
   /**
    * Enable or disable the store for contacts, chats, and messages.
@@ -218,6 +223,11 @@ export interface SessionConfig {
    * @example {"status":null,"groups":null,"channels":null}
    */
   ignore?: IgnoreConfig
+  /**
+   * How connected session renders in device - in format 'Browser (Device)' - Firefox (MacOS)
+   * @example {"browserName":"Firefox","deviceName":"MacOS"}
+   */
+  client?: ClientSessionConfig
   /** @example {"store":{"enabled":true,"fullSync":false}} */
   noweb?: NowebConfig
   /** WebJS-specific settings. */
@@ -1514,6 +1524,8 @@ export interface WAHAEnvironment {
   tier: string
   /** @example "/usr/path/to/bin/google-chrome" */
   browser: string
+  /** @example "linux/x86" */
+  platform: string
 }
 
 export interface WorkerInfo {
