@@ -1,6 +1,6 @@
 {
   "name": "@muhammedaksam/waha-node",
-  "version": "2026.1.2",
+  "version": "2026.1.3",
   "type": "module",
   "description": "Node.js TypeScript SDK for WAHA (WhatsApp HTTP API) - auto-generated from OpenAPI spec",
   "main": "dist/index.cjs.js",
