@@ -36,7 +36,7 @@
             "description": ""
           }
         },
-        "tags": ["🔑 Auth"],
+        "tags": ["📱 Pairing"],
         "security": [{ "api_key": [] }]
       }
     },
@@ -60,7 +60,82 @@
           }
         },
         "responses": { "201": { "description": "" } },
-        "tags": ["🔑 Auth"],
+        "tags": ["📱 Pairing"],
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "/api/keys": {
+      "post": {
+        "operationId": "ApiKeysController_create",
+        "summary": "Create a new API key",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ApiKeyRequest" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ApiKeyDTO" } }
+            }
+          }
+        },
+        "tags": ["🔑 Api Keys"],
+        "security": [{ "api_key": [] }]
+      },
+      "get": {
+        "operationId": "ApiKeysController_list",
+        "summary": "Get all API keys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ApiKeyDTO" } }
+              }
+            }
+          }
+        },
+        "tags": ["🔑 Api Keys"],
+        "security": [{ "api_key": [] }]
+      }
+    },
+    "/api/keys/{id}": {
+      "put": {
+        "operationId": "ApiKeysController_update",
+        "summary": "Update an API key",
+        "parameters": [
+          { "name": "id", "required": true, "in": "path", "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ApiKeyRequest" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ApiKeyDTO" } }
+            }
+          }
+        },
+        "tags": ["🔑 Api Keys"],
+        "security": [{ "api_key": [] }]
+      },
+      "delete": {
+        "operationId": "ApiKeysController_delete",
+        "summary": "Delete an API key",
+        "parameters": [
+          { "name": "id", "required": true, "in": "path", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["🔑 Api Keys"],
         "security": [{ "api_key": [] }]
       }
     },
@@ -98,7 +173,7 @@
           }
         },
         "tags": ["🖥️ Sessions"],
-        "security": [{ "api_key": [] }]
+        "security": [{ "api_key": [] }, { "oauth2": ["read:items"] }]
       },
       "post": {
         "operationId": "SessionsController_create",
@@ -3898,6 +3973,7 @@
     "/api/screenshot": {
       "get": {
         "operationId": "ScreenshotController_screenshot",
+        "summary": "Get a screenshot of the current WhatsApp session (**WEBJS** only)",
         "parameters": [
           {
             "name": "session",
@@ -3917,7 +3993,7 @@
             "description": ""
           }
         },
-        "tags": ["🖼️ Screenshot"],
+        "tags": ["📱 Pairing"],
         "security": [{ "api_key": [] }]
       }
     },
@@ -4402,32 +4478,32 @@
   "info": {
     "title": "WAHA - WhatsApp HTTP API",
     "description": "<b>WhatsApp HTTP API</b> that you can run in a click!<br/><a href=\"/dashboard\"><b>📊 Dashboard</b></a><br/><br/>Learn more:<ul><li><a href=\"https://waha.devlike.pro/\" target=\"_blank\">Documentation</a></li><li><a href=\"https://waha.devlike.pro/docs/how-to/engines/#features\" target=\"_blank\">Supported features in engines</a></li><li><a href=\"https://github.com/devlikeapro/waha\" target=\"_blank\">GitHub - WAHA Core</a></li><li><a href=\"https://github.com/devlikeapro/waha-plus\" target=\"_blank\">GitHub - WAHA Plus</a></li></ul><p>Support the project and get WAHA Plus version!</p><ul><li><a href=\"https://waha.devlike.pro/docs/how-to/plus-version/\" target=\"_blank\">WAHA Plus</a></li><li><a href=\"https://patreon.com/wa_http_api/\" target=\"_blank\">Patreon</a></li><li><a href=\"https://boosty.to/wa-http-api/\" target=\"_blank\">Boosty</a></li><li><a href=\"https://portal.devlike.pro/\" target=\"_blank\">Patron Portal</a></li></ul>",
-    "version": "2026.1.3",
+    "version": "2026.1.4",
     "contact": {}
   },
   "tags": [
     { "name": "🖥️ Sessions", "description": "Control WhatsApp sessions (accounts)" },
-    { "name": "🧩 Apps", "description": "Applications (built-in integrations)" },
-    { "name": "🔑 Auth", "description": "Authentication" },
+    { "name": "📱 Pairing", "description": "Pair a session with WhatsApp on your phone." },
     { "name": "🆔 Profile", "description": "Your profile information" },
-    { "name": "🖼️ Screenshot", "description": "Get screenshot of WhatsApp and show QR code" },
     { "name": "📤 Chatting", "description": "Chatting methods" },
-    { "name": "📞 Calls", "description": "Call handling methods" },
+    { "name": "✅ Presence", "description": "Presence information" },
     { "name": "📢 Channels", "description": "Channels (newsletters) methods" },
     { "name": "🟢 Status", "description": "Status (aka stories) methods" },
     { "name": "💬 Chats", "description": "Chats methods" },
+    { "name": "🔑 Api Keys", "description": "API Keys management" },
     {
       "name": "👤 Contacts",
       "description": "Contacts methods.<br>\n                Use phone number (without +) or phone number and `@c.us` at the end as `contactId`.<br>\n                'E.g: `12312312310` OR `12312312310@c.us`<br>"
     },
     { "name": "👥 Groups", "description": "Groups methods.<br>" },
-    { "name": "✅ Presence", "description": "Presence information" },
+    { "name": "📞 Calls", "description": "Call handling methods" },
     { "name": "📅 Events", "description": "Event Message" },
     {
       "name": "🏷️ Labels",
       "description": "Labels - available only for WhatsApp Business accounts"
     },
     { "name": "🖼️ Media", "description": "Media methods" },
+    { "name": "🧩 Apps", "description": "Applications (built-in integrations)" },
     { "name": "🔍 Observability", "description": "Other methods" },
     { "name": "🗄️ Storage", "description": "Storage methods" }
   ],
@@ -4467,6 +4543,26 @@
           }
         },
         "required": ["phoneNumber"]
+      },
+      "ApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "isAdmin": { "type": "boolean", "default": false, "example": false },
+          "session": { "type": "string", "nullable": true, "default": null, "example": "default" },
+          "isActive": { "type": "boolean", "default": true, "example": true }
+        },
+        "required": ["isAdmin", "session", "isActive"]
+      },
+      "ApiKeyDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "key_id_00000000000000000000000000" },
+          "key": { "type": "string", "example": "key_11111111111AAAAAAAAAAAAAAAAAAAAA" },
+          "isActive": { "type": "boolean", "example": true },
+          "isAdmin": { "type": "boolean", "example": false },
+          "session": { "type": "string", "nullable": true, "example": "default" }
+        },
+        "required": ["id", "key", "isActive", "isAdmin"]
       },
       "ChatWootCommandsConfig": {
         "type": "object",
@@ -4751,13 +4847,7 @@
       "SessionCreateRequest": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 54,
-            "pattern": "/^[a-zA-Z0-9_-]*$/",
-            "example": "default",
-            "description": "Session name (id)"
-          },
+          "name": { "type": "string", "example": "default", "description": "Session name (id)" },
           "apps": {
             "nullable": true,
             "description": "Apps to be synchronized for this session.",
@@ -6327,9 +6417,13 @@
           "engine": { "type": "string", "example": "WEBJS" },
           "tier": { "type": "string", "example": "PLUS" },
           "browser": { "type": "string", "example": "/usr/path/to/bin/google-chrome" },
-          "platform": { "type": "string", "example": "linux/x86" }
+          "platform": { "type": "string", "example": "linux/x86" },
+          "worker": {
+            "type": "object",
+            "properties": { "id": { "required": true, "type": "string", "nullable": true } }
+          }
         },
-        "required": ["version", "engine", "tier", "browser", "platform"]
+        "required": ["version", "engine", "tier", "browser", "platform", "worker"]
       },
       "WorkerInfo": {
         "type": "object",

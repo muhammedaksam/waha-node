@@ -16,6 +16,8 @@ import {
   Base64File,
   QRCodeValue,
   RequestCodeRequest,
+  ApiKeyRequest,
+  ApiKeyDTO,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,

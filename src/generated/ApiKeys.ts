@@ -200,116 +200,76 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class Status<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class ApiKeys<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags 🟢 Status
-   * @name StatusControllerSendTextStatus
-   * @summary Send text status
-   * @request POST:/api/{session}/status/text
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerCreate
+   * @summary Create a new API key
+   * @request POST:/api/keys
    * @secure
    */
-  statusControllerSendTextStatus = (session: any, data: TextStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/text`,
+  apiKeysControllerCreate = (data: ApiKeyRequest, params: RequestParams = {}) =>
+    this.request<ApiKeyDTO, any>({
+      path: `/api/keys`,
       method: 'POST',
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: 'json',
       ...params,
     })
   /**
    * No description
    *
-   * @tags 🟢 Status
-   * @name StatusControllerSendImageStatus
-   * @summary Send image status
-   * @request POST:/api/{session}/status/image
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerList
+   * @summary Get all API keys
+   * @request GET:/api/keys
    * @secure
    */
-  statusControllerSendImageStatus = (session: any, data: ImageStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/image`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVoiceStatus
-   * @summary Send voice status
-   * @request POST:/api/{session}/status/voice
-   * @secure
-   */
-  statusControllerSendVoiceStatus = (session: any, data: VoiceStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/voice`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVideoStatus
-   * @summary Send video status
-   * @request POST:/api/{session}/status/video
-   * @secure
-   */
-  statusControllerSendVideoStatus = (session: any, data: VideoStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/video`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerDeleteStatus
-   * @summary DELETE sent status
-   * @request POST:/api/{session}/status/delete
-   * @secure
-   */
-  statusControllerDeleteStatus = (
-    session: any,
-    data: DeleteStatusRequest,
-    params: RequestParams = {},
-  ) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/delete`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerGetNewMessageId
-   * @summary Generate message ID you can use to batch contacts
-   * @request GET:/api/{session}/status/new-message-id
-   * @secure
-   */
-  statusControllerGetNewMessageId = (session: any, params: RequestParams = {}) =>
-    this.request<NewMessageIDResponse, any>({
-      path: `/api/${session}/status/new-message-id`,
+  apiKeysControllerList = (params: RequestParams = {}) =>
+    this.request<ApiKeyDTO[], any>({
+      path: `/api/keys`,
       method: 'GET',
       secure: true,
       format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerUpdate
+   * @summary Update an API key
+   * @request PUT:/api/keys/{id}
+   * @secure
+   */
+  apiKeysControllerUpdate = (id: string, data: ApiKeyRequest, params: RequestParams = {}) =>
+    this.request<ApiKeyDTO, any>({
+      path: `/api/keys/${id}`,
+      method: 'PUT',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerDelete
+   * @summary Delete an API key
+   * @request DELETE:/api/keys/{id}
+   * @secure
+   */
+  apiKeysControllerDelete = (id: string, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/keys/${id}`,
+      method: 'DELETE',
+      secure: true,
       ...params,
     })
 }
