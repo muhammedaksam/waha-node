@@ -1,7 +1,7 @@
 import { ApiConfig } from './generated/http-client'
 import type { AxiosInstance } from 'axios'
+import { ApiKeys } from './generated/ApiKeys'
 import { Apps } from './generated/Apps'
-import { Auth } from './generated/Auth'
 import { Calls } from './generated/Calls'
 import { Channels } from './generated/Channels'
 import { Chats } from './generated/Chats'
@@ -12,15 +12,15 @@ import { Groups } from './generated/Groups'
 import { Labels } from './generated/Labels'
 import { Media } from './generated/Media'
 import { Observability } from './generated/Observability'
+import { Pairing } from './generated/Pairing'
 import { Presence } from './generated/Presence'
 import { Profile } from './generated/Profile'
-import { Screenshot } from './generated/Screenshot'
 import { Sessions } from './generated/Sessions'
 import { Status } from './generated/Status'
 
 export class WahaClient {
+  public apikeys: ApiKeys
   public apps: Apps
-  public auth: Auth
   public calls: Calls
   public channels: Channels
   public chats: Chats
@@ -31,9 +31,9 @@ export class WahaClient {
   public labels: Labels
   public media: Media
   public observability: Observability
+  public pairing: Pairing
   public presence: Presence
   public profile: Profile
-  public screenshot: Screenshot
   public sessions: Sessions
   public status: Status
 
@@ -77,8 +77,8 @@ export class WahaClient {
       apiConfig = configOrUrl
     }
 
+    this.apikeys = new ApiKeys(apiConfig)
     this.apps = new Apps(apiConfig)
-    this.auth = new Auth(apiConfig)
     this.calls = new Calls(apiConfig)
     this.channels = new Channels(apiConfig)
     this.chats = new Chats(apiConfig)
@@ -89,9 +89,9 @@ export class WahaClient {
     this.labels = new Labels(apiConfig)
     this.media = new Media(apiConfig)
     this.observability = new Observability(apiConfig)
+    this.pairing = new Pairing(apiConfig)
     this.presence = new Presence(apiConfig)
     this.profile = new Profile(apiConfig)
-    this.screenshot = new Screenshot(apiConfig)
     this.sessions = new Sessions(apiConfig)
     this.status = new Status(apiConfig)
   }
