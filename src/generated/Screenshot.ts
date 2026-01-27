@@ -25,6 +25,7 @@ import {
   MeInfo,
   ProxyConfig,
   IgnoreConfig,
+  ClientSessionConfig,
   NowebStoreConfig,
   NowebConfig,
   WebjsConfig,

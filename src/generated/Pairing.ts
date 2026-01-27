@@ -200,95 +200,48 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class Status<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class Pairing<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags 🟢 Status
-   * @name StatusControllerSendTextStatus
-   * @summary Send text status
-   * @request POST:/api/{session}/status/text
+   * @tags 📱 Pairing
+   * @name AuthControllerGetQr
+   * @summary Get QR code for pairing WhatsApp API.
+   * @request GET:/api/{session}/auth/qr
    * @secure
    */
-  statusControllerSendTextStatus = (session: any, data: TextStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/text`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendImageStatus
-   * @summary Send image status
-   * @request POST:/api/{session}/status/image
-   * @secure
-   */
-  statusControllerSendImageStatus = (session: any, data: ImageStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/image`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVoiceStatus
-   * @summary Send voice status
-   * @request POST:/api/{session}/status/voice
-   * @secure
-   */
-  statusControllerSendVoiceStatus = (session: any, data: VoiceStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/voice`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVideoStatus
-   * @summary Send video status
-   * @request POST:/api/{session}/status/video
-   * @secure
-   */
-  statusControllerSendVideoStatus = (session: any, data: VideoStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/video`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerDeleteStatus
-   * @summary DELETE sent status
-   * @request POST:/api/{session}/status/delete
-   * @secure
-   */
-  statusControllerDeleteStatus = (
+  authControllerGetQr = (
     session: any,
-    data: DeleteStatusRequest,
+    query: {
+      /** @default "image" */
+      format: 'image' | 'raw'
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<File, any>({
+      path: `/api/${session}/auth/qr`,
+      method: 'GET',
+      query: query,
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 📱 Pairing
+   * @name AuthControllerRequestCode
+   * @summary Request authentication code.
+   * @request POST:/api/{session}/auth/request-code
+   * @secure
+   */
+  authControllerRequestCode = (
+    session: any,
+    data: RequestCodeRequest,
     params: RequestParams = {},
   ) =>
     this.request<void, any>({
-      path: `/api/${session}/status/delete`,
+      path: `/api/${session}/auth/request-code`,
       method: 'POST',
       body: data,
       secure: true,
@@ -298,16 +251,23 @@ export class Status<SecurityDataType = unknown> extends HttpClient<SecurityDataT
   /**
    * No description
    *
-   * @tags 🟢 Status
-   * @name StatusControllerGetNewMessageId
-   * @summary Generate message ID you can use to batch contacts
-   * @request GET:/api/{session}/status/new-message-id
+   * @tags 📱 Pairing
+   * @name ScreenshotControllerScreenshot
+   * @summary Get a screenshot of the current WhatsApp session (**WEBJS** only)
+   * @request GET:/api/screenshot
    * @secure
    */
-  statusControllerGetNewMessageId = (session: any, params: RequestParams = {}) =>
-    this.request<NewMessageIDResponse, any>({
-      path: `/api/${session}/status/new-message-id`,
+  screenshotControllerScreenshot = (
+    query: {
+      /** @default "default" */
+      session: string
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<File, any>({
+      path: `/api/screenshot`,
       method: 'GET',
+      query: query,
       secure: true,
       format: 'json',
       ...params,

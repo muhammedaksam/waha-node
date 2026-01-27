@@ -32,6 +32,37 @@ export interface RequestCodeRequest {
   method?: string
 }
 
+export interface ApiKeyRequest {
+  /**
+   * @default false
+   * @example false
+   */
+  isAdmin: boolean
+  /**
+   * @default null
+   * @example "default"
+   */
+  session: string | null
+  /**
+   * @default true
+   * @example true
+   */
+  isActive: boolean
+}
+
+export interface ApiKeyDTO {
+  /** @example "key_id_00000000000000000000000000" */
+  id: string
+  /** @example "key_11111111111AAAAAAAAAAAAAAAAAAAAA" */
+  key: string
+  /** @example true */
+  isActive: boolean
+  /** @example false */
+  isAdmin: boolean
+  /** @example "default" */
+  session?: string | null
+}
+
 export interface ChatWootCommandsConfig {
   /** @default true */
   server: boolean
@@ -132,6 +163,11 @@ export interface IgnoreConfig {
   broadcast?: boolean
 }
 
+export interface ClientSessionConfig {
+  deviceName?: string
+  browserName?: string
+}
+
 export interface NowebStoreConfig {
   /**
    * Enable or disable the store for contacts, chats, and messages.
@@ -218,6 +254,11 @@ export interface SessionConfig {
    * @example {"status":null,"groups":null,"channels":null}
    */
   ignore?: IgnoreConfig
+  /**
+   * How connected session renders in device - in format 'Browser (Device)' - Firefox (MacOS)
+   * @example {"browserName":"Firefox","deviceName":"MacOS"}
+   */
+  client?: ClientSessionConfig
   /** @example {"store":{"enabled":true,"fullSync":false}} */
   noweb?: NowebConfig
   /** WebJS-specific settings. */
@@ -246,8 +287,6 @@ export interface SessionInfo {
 export interface SessionCreateRequest {
   /**
    * Session name (id)
-   * @maxLength 54
-   * @pattern /^[a-zA-Z0-9_-]*$/
    * @example "default"
    */
   name?: string
@@ -1514,6 +1553,11 @@ export interface WAHAEnvironment {
   tier: string
   /** @example "/usr/path/to/bin/google-chrome" */
   browser: string
+  /** @example "linux/x86" */
+  platform: string
+  worker: {
+    id: string | null
+  }
 }
 
 export interface WorkerInfo {
