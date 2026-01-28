@@ -193,6 +193,33 @@ export interface NowebConfig {
   store?: NowebStoreConfig
 }
 
+export interface GowsStorageConfig {
+  /**
+   * Store messages locally. Set to false to disable; omit or null to keep enabled.
+   * @example true
+   */
+  messages?: boolean | null
+  /**
+   * Store groups locally. Set to false to disable; omit or null to keep enabled.
+   * @example true
+   */
+  groups?: boolean | null
+  /**
+   * Store chats locally. Set to false to disable; omit or null to keep enabled.
+   * @example true
+   */
+  chats?: boolean | null
+  /**
+   * Store labels locally. Set to false to disable; omit or null to keep enabled.
+   * @example true
+   */
+  labels?: boolean | null
+}
+
+export interface GowsConfig {
+  storage?: GowsStorageConfig
+}
+
 export interface WebjsConfig {
   /**
    * Enable emission of special 'tag:*' engine events required for presence.update and message.ack.
@@ -261,6 +288,8 @@ export interface SessionConfig {
   client?: ClientSessionConfig
   /** @example {"store":{"enabled":true,"fullSync":false}} */
   noweb?: NowebConfig
+  /** @example {"storage":{"messages":true,"groups":true,"chats":true,"labels":true}} */
+  gows?: GowsConfig
   /** WebJS-specific settings. */
   webjs?: WebjsConfig
   webhooks?: WebhookConfig[]

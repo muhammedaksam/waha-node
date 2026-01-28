@@ -30,6 +30,8 @@ import {
   ClientSessionConfig,
   NowebStoreConfig,
   NowebConfig,
+  GowsStorageConfig,
+  GowsConfig,
   WebjsConfig,
   HmacConfiguration,
   RetriesConfiguration,
