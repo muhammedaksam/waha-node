@@ -1492,10 +1492,10 @@ export interface ParticipantsRequest {
 
 export interface WAHASessionPresence {
   /**
-   * Chat ID - either group id or contact id
+   * Chat ID - either group id or contact id. Required for chat-related presence statuses; omit for ONLINE/OFFLINE.
    * @example "11111111111@c.us"
    */
-  chatId: string
+  chatId?: string
   presence: 'offline' | 'online' | 'typing' | 'recording' | 'paused'
 }
 
