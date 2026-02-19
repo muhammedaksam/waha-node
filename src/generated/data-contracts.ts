@@ -411,7 +411,7 @@ export interface RemoteFile {
    * @example "filename.jpg"
    */
   filename?: string
-  /** @example "https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg" */
+  /** @example "https://picsum.photos/1024" */
   url: string
 }
 
@@ -711,7 +711,7 @@ export interface MessageVideoRequest {
 }
 
 export interface FileURL {
-  /** @example "https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg" */
+  /** @example "https://picsum.photos/1024" */
   url?: string
 }
 
@@ -724,7 +724,7 @@ export interface FileContent {
 }
 
 export interface LinkPreviewData {
-  /** @example {"url":"https://github.com/devlikeapro/waha/raw/core/examples/waha.jpg"} */
+  /** @example {"url":"https://picsum.photos/1024"} */
   image?: FileURL | FileContent
   /** @default "https://github.com/" */
   url: string
