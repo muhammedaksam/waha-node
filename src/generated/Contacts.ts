@@ -93,7 +93,7 @@ import {
   MessageReplyRequest,
   MessageLinkPreviewRequest,
   ChatSummary,
-  OverviewPaginationParams,
+  GetChatsOverviewParams,
   OverviewFilter,
   OverviewBodyRequest,
   ChatPictureResponse,
@@ -376,6 +376,22 @@ export class Contacts<SecurityDataType = unknown> extends HttpClient<SecurityDat
       body: data,
       secure: true,
       type: ContentType.Json,
+      ...params,
+    })
+  /**
+   * @description The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.
+   *
+   * @tags 👤 Contacts
+   * @name ContactsSessionControllerGet
+   * @summary Get contact basic info
+   * @request GET:/api/{session}/contacts/{id}
+   * @secure
+   */
+  contactsSessionControllerGet = (session: any, id: string, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/${session}/contacts/${id}`,
+      method: 'GET',
+      secure: true,
       ...params,
     })
   /**

@@ -93,7 +93,7 @@ import {
   MessageReplyRequest,
   MessageLinkPreviewRequest,
   ChatSummary,
-  OverviewPaginationParams,
+  GetChatsOverviewParams,
   OverviewFilter,
   OverviewBodyRequest,
   ChatPictureResponse,
@@ -255,7 +255,7 @@ export class Pairing<SecurityDataType = unknown> extends HttpClient<SecurityData
    *
    * @tags 📱 Pairing
    * @name ScreenshotControllerScreenshot
-   * @summary Get a screenshot of the current WhatsApp session (**WEBJS** only)
+   * @summary Get a screenshot of the current WhatsApp session (**WEBJS/WPP** only)
    * @request GET:/api/screenshot
    * @secure
    */

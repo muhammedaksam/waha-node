@@ -93,7 +93,7 @@ import {
   MessageReplyRequest,
   MessageLinkPreviewRequest,
   ChatSummary,
-  OverviewPaginationParams,
+  GetChatsOverviewParams,
   OverviewFilter,
   OverviewBodyRequest,
   ChatPictureResponse,
@@ -608,6 +608,12 @@ export class Chatting<SecurityDataType = unknown> extends HttpClient<SecurityDat
        * @example false
        */
       downloadMedia?: boolean
+      /**
+       * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+       * @default true
+       * @example true
+       */
+      merge?: boolean
       /** @example "11111111111@c.us" */
       chatId: string
       /** @default "default" */

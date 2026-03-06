@@ -93,7 +93,7 @@ import {
   MessageReplyRequest,
   MessageLinkPreviewRequest,
   ChatSummary,
-  OverviewPaginationParams,
+  GetChatsOverviewParams,
   OverviewFilter,
   OverviewBodyRequest,
   ChatPictureResponse,
@@ -219,6 +219,12 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
       sortBy?: 'conversationTimestamp' | 'id' | 'name'
       /** Sort order - <b>desc</b>ending (Z => A, New first) or <b>asc</b>ending (A => Z, Old first) */
       sortOrder?: 'desc' | 'asc'
+      /**
+       * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+       * @default true
+       * @example true
+       */
+      merge?: boolean
       limit?: number
       offset?: number
     },
@@ -243,6 +249,12 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
   chatsControllerGetChatsOverview = (
     session: any,
     query?: {
+      /**
+       * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+       * @default true
+       * @example true
+       */
+      merge?: boolean
       /** @default 20 */
       limit?: number
       offset?: number
@@ -357,6 +369,12 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
        * @example false
        */
       downloadMedia?: boolean
+      /**
+       * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+       * @default true
+       * @example true
+       */
+      merge?: boolean
       /** @default 10 */
       limit: number
       offset?: number
@@ -449,6 +467,12 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
        * @example true
        */
       downloadMedia?: boolean
+      /**
+       * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+       * @default true
+       * @example true
+       */
+      merge?: boolean
     },
     params: RequestParams = {},
   ) =>

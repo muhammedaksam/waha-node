@@ -93,7 +93,7 @@ import {
   MessageReplyRequest,
   MessageLinkPreviewRequest,
   ChatSummary,
-  OverviewPaginationParams,
+  GetChatsOverviewParams,
   OverviewFilter,
   OverviewBodyRequest,
   ChatPictureResponse,
@@ -295,23 +295,6 @@ export class Apps<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
       path: `/api/apps/${id}`,
       method: 'DELETE',
       secure: true,
-      ...params,
-    })
-  /**
-   * @description Get available languages for Chatwoot app
-   *
-   * @tags 🧩 Apps
-   * @name ChatwootLocalesControllerGetLanguages
-   * @summary Get available languages for Chatwoot app
-   * @request GET:/api/apps/chatwoot/locales
-   * @secure
-   */
-  chatwootLocalesControllerGetLanguages = (params: RequestParams = {}) =>
-    this.request<object[], any>({
-      path: `/api/apps/chatwoot/locales`,
-      method: 'GET',
-      secure: true,
-      format: 'json',
       ...params,
     })
 }

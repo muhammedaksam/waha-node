@@ -1202,6 +1202,13 @@
             "schema": { "default": true, "example": false, "type": "boolean" }
           },
           {
+            "name": "merge",
+            "required": false,
+            "in": "query",
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact",
+            "schema": { "default": true, "example": true, "type": "boolean" }
+          },
+          {
             "name": "chatId",
             "required": true,
             "in": "query",
@@ -1368,6 +1375,13 @@
             "description": "Sort order - <b>desc</b>ending (Z => A, New first) or <b>asc</b>ending (A => Z, Old first)",
             "schema": { "enum": ["desc", "asc"], "type": "string" }
           },
+          {
+            "name": "merge",
+            "required": false,
+            "in": "query",
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact",
+            "schema": { "default": true, "example": true, "type": "boolean" }
+          },
           { "name": "limit", "required": false, "in": "query", "schema": { "type": "number" } },
           { "name": "offset", "required": false, "in": "query", "schema": { "type": "number" } }
         ],
@@ -1387,6 +1401,13 @@
             "in": "path",
             "schema": { "default": "default" },
             "description": "Session name"
+          },
+          {
+            "name": "merge",
+            "required": false,
+            "in": "query",
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact",
+            "schema": { "default": true, "example": true, "type": "boolean" }
           },
           {
             "name": "limit",
@@ -1549,6 +1570,13 @@
             "schema": { "default": true, "example": false, "type": "boolean" }
           },
           {
+            "name": "merge",
+            "required": false,
+            "in": "query",
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact",
+            "schema": { "default": true, "example": true, "type": "boolean" }
+          },
+          {
             "name": "limit",
             "required": true,
             "in": "query",
@@ -1696,6 +1724,13 @@
             "required": false,
             "in": "query",
             "description": "Download media for messages",
+            "schema": { "default": true, "example": true, "type": "boolean" }
+          },
+          {
+            "name": "merge",
+            "required": false,
+            "in": "query",
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact",
             "schema": { "default": true, "example": true, "type": "boolean" }
           },
           {
@@ -2902,6 +2937,32 @@
         "security": [{ "api_key": [] }]
       }
     },
+    "/api/{session}/contacts/{id}": {
+      "get": {
+        "operationId": "ContactsSessionController_get",
+        "summary": "Get contact basic info",
+        "description": "The method always return result, even if the phone number is not registered in WhatsApp. For that - use /contacts/check-exists endpoint below.",
+        "parameters": [
+          {
+            "name": "session",
+            "required": true,
+            "in": "path",
+            "schema": { "default": "default" },
+            "description": "Session name"
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Contact ID",
+            "schema": { "example": "123456789@c.us", "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["👤 Contacts"],
+        "security": [{ "api_key": [] }]
+      }
+    },
     "/api/{session}/contacts/{chatId}": {
       "put": {
         "operationId": "ContactsSessionController_put",
@@ -3973,7 +4034,7 @@
     "/api/screenshot": {
       "get": {
         "operationId": "ScreenshotController_screenshot",
-        "summary": "Get a screenshot of the current WhatsApp session (**WEBJS** only)",
+        "summary": "Get a screenshot of the current WhatsApp session (**WEBJS/WPP** only)",
         "parameters": [
           {
             "name": "session",
@@ -4455,30 +4516,12 @@
         "tags": ["🧩 Apps"],
         "security": [{ "api_key": [] }]
       }
-    },
-    "/api/apps/chatwoot/locales": {
-      "get": {
-        "operationId": "ChatwootLocalesController_getLanguages",
-        "summary": "Get available languages for Chatwoot app",
-        "description": "Get available languages for Chatwoot app",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": { "schema": { "type": "array", "items": { "type": "object" } } }
-            }
-          }
-        },
-        "tags": ["🧩 Apps"],
-        "security": [{ "api_key": [] }]
-      }
     }
   },
   "info": {
     "title": "WAHA - WhatsApp HTTP API",
     "description": "<b>WhatsApp HTTP API</b> that you can run in a click!<br/><a href=\"/dashboard\"><b>📊 Dashboard</b></a><br/><br/>Learn more:<ul><li><a href=\"https://waha.devlike.pro/\" target=\"_blank\">Documentation</a></li><li><a href=\"https://waha.devlike.pro/docs/how-to/engines/#features\" target=\"_blank\">Supported features in engines</a></li><li><a href=\"https://github.com/devlikeapro/waha\" target=\"_blank\">GitHub - WAHA Core</a></li><li><a href=\"https://github.com/devlikeapro/waha-plus\" target=\"_blank\">GitHub - WAHA Plus</a></li></ul><p>Support the project and get WAHA Plus version!</p><ul><li><a href=\"https://waha.devlike.pro/docs/how-to/plus-version/\" target=\"_blank\">WAHA Plus</a></li><li><a href=\"https://patreon.com/wa_http_api/\" target=\"_blank\">Patreon</a></li><li><a href=\"https://boosty.to/wa-http-api/\" target=\"_blank\">Boosty</a></li><li><a href=\"https://portal.devlike.pro/\" target=\"_blank\">Patron Portal</a></li></ul>",
-    "version": "2026.2.2",
+    "version": "2026.3.2",
     "contact": {}
   },
   "tags": [
@@ -5820,9 +5863,15 @@
         },
         "required": ["id", "name", "picture", "lastMessage", "_chat"]
       },
-      "OverviewPaginationParams": {
+      "GetChatsOverviewParams": {
         "type": "object",
         "properties": {
+          "merge": {
+            "type": "boolean",
+            "default": true,
+            "example": true,
+            "description": "Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact"
+          },
           "limit": { "type": "number", "default": 20 },
           "offset": { "type": "number" }
         }
@@ -5841,7 +5890,7 @@
       "OverviewBodyRequest": {
         "type": "object",
         "properties": {
-          "pagination": { "$ref": "#/components/schemas/OverviewPaginationParams" },
+          "pagination": { "$ref": "#/components/schemas/GetChatsOverviewParams" },
           "filter": { "$ref": "#/components/schemas/OverviewFilter" }
         },
         "required": ["pagination", "filter"]
@@ -6570,7 +6619,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -6633,7 +6686,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -6755,7 +6812,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -6818,7 +6879,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -6899,7 +6964,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -6962,7 +7031,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7038,7 +7111,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7198,7 +7275,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7308,7 +7389,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7385,7 +7470,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7457,7 +7546,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7538,7 +7631,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7601,7 +7698,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7710,7 +7811,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7773,7 +7878,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7845,7 +7954,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7924,7 +8037,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -7987,7 +8104,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8050,7 +8171,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8113,7 +8238,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8176,7 +8305,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8248,7 +8381,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8311,7 +8448,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8438,7 +8579,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8501,7 +8646,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8569,7 +8718,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8632,7 +8785,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8696,7 +8853,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",
@@ -8760,7 +8921,11 @@
             "example": { "user.id": "123", "user.email": "email@example.com" },
             "description": "Metadata for the session."
           },
-          "engine": { "enum": ["WEBJS", "NOWEB", "GOWS"], "type": "string", "example": "WEBJS" },
+          "engine": {
+            "enum": ["WEBJS", "WPP", "NOWEB", "GOWS"],
+            "type": "string",
+            "example": "WEBJS"
+          },
           "event": {
             "enum": [
               "session.status",

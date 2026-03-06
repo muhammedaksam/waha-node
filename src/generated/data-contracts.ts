@@ -1050,7 +1050,13 @@ export interface ChatSummary {
   _chat: object
 }
 
-export interface OverviewPaginationParams {
+export interface GetChatsOverviewParams {
+  /**
+   * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
+   * @default true
+   * @example true
+   */
+  merge?: boolean
   /** @default 20 */
   limit?: number
   offset?: number
@@ -1065,7 +1071,7 @@ export interface OverviewFilter {
 }
 
 export interface OverviewBodyRequest {
-  pagination: OverviewPaginationParams
+  pagination: GetChatsOverviewParams
   filter: OverviewFilter
 }
 
@@ -1686,7 +1692,7 @@ export interface WAHAWebhookSessionStatus {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the session status changes.
    * @default "session.status"
@@ -1746,7 +1752,7 @@ export interface WAHAWebhookMessage {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Incoming message.
    * @default "message"
@@ -1853,7 +1859,7 @@ export interface WAHAWebhookMessageReaction {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a user reacts or removes a reaction.
    * @default "message.reaction"
@@ -1913,7 +1919,7 @@ export interface WAHAWebhookMessageAny {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Fired on all message creations, including your own.
    * @default "message.any"
@@ -1991,7 +1997,7 @@ export interface WAHAWebhookMessageAck {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Receive events when server or recipient gets the message, read or played it (contacts only).
    * @default "message.ack"
@@ -2051,7 +2057,7 @@ export interface WAHAWebhookMessageAckGroup {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Receive events when participants in a group read or play messages.
    * @default "message.ack.group"
@@ -2122,7 +2128,7 @@ export interface WAHAWebhookMessageRevoked {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a user, whether it be you or any other participant, revokes a previously sent message.
    * @default "message.revoked"
@@ -2247,7 +2253,7 @@ export interface WAHAWebhookMessageEdited {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a user edits a previously sent message.
    * @default "message.edited"
@@ -2338,7 +2344,7 @@ export interface WebhookGroupV2Join {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * When you joined or were added to a group
    * @default "group.v2.join"
@@ -2413,7 +2419,7 @@ export interface WebhookGroupV2Leave {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * When you left or were removed from a group
    * @default "group.v2.leave"
@@ -2483,7 +2489,7 @@ export interface WebhookGroupV2Update {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * When group info is updated
    * @default "group.v2.update"
@@ -2556,7 +2562,7 @@ export interface WebhookGroupV2Participants {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * When participants changed - join, leave, promote to admin
    * @default "group.v2.participants"
@@ -2616,7 +2622,7 @@ export interface WAHAWebhookPresenceUpdate {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The most recent presence information for a chat.
    * @default "presence.update"
@@ -2716,7 +2722,7 @@ export interface WAHAWebhookPollVote {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * With this event, you receive new votes for the poll sent.
    * @default "poll.vote"
@@ -2776,7 +2782,7 @@ export interface WAHAWebhookPollVoteFailed {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * There may be cases when it fails to decrypt a vote from the user. Read more about how to handle such events in the documentations.
    * @default "poll.vote.failed"
@@ -2843,7 +2849,7 @@ export interface WAHAWebhookChatArchive {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the chat is archived or unarchived
    * @default "chat.archive"
@@ -2917,7 +2923,7 @@ export interface WAHAWebhookCallReceived {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the call is received by the user.
    * @default "call.received"
@@ -2977,7 +2983,7 @@ export interface WAHAWebhookCallAccepted {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the call is accepted by the user.
    * @default "call.accepted"
@@ -3037,7 +3043,7 @@ export interface WAHAWebhookCallRejected {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the call is rejected by the user.
    * @default "call.rejected"
@@ -3097,7 +3103,7 @@ export interface WAHAWebhookLabelUpsert {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a label is created or updated
    * @default "label.upsert"
@@ -3157,7 +3163,7 @@ export interface WAHAWebhookLabelDeleted {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a label is deleted
    * @default "label.deleted"
@@ -3231,7 +3237,7 @@ export interface WAHAWebhookLabelChatAdded {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a label is added to a chat
    * @default "label.chat.added"
@@ -3291,7 +3297,7 @@ export interface WAHAWebhookLabelChatDeleted {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when a label is deleted from a chat
    * @default "label.chat.deleted"
@@ -3396,7 +3402,7 @@ export interface WAHAWebhookEventResponse {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the event response is received.
    * @default "event.response"
@@ -3456,7 +3462,7 @@ export interface WAHAWebhookEventResponseFailed {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * The event is triggered when the event response is failed to decrypt.
    * @default "event.response.failed"
@@ -3521,7 +3527,7 @@ export interface WAHAWebhookEngineEvent {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Internal engine event.
    * @default "engine.event"
@@ -3581,7 +3587,7 @@ export interface WAHAWebhookGroupJoin {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Some one join a group.
    * @deprecated
@@ -3642,7 +3648,7 @@ export interface WAHAWebhookGroupLeave {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * Some one left a group.
    * @deprecated
@@ -3703,7 +3709,7 @@ export interface WAHAWebhookStateChange {
    */
   metadata?: object
   /** @example "WEBJS" */
-  engine: 'WEBJS' | 'NOWEB' | 'GOWS'
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
   /**
    * It’s an internal engine’s state, not session status.
    * @deprecated
