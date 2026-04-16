@@ -103,6 +103,16 @@ export interface CallsAppChannelConfig {
   reject: boolean
   /** Optional auto-reply message sent after the call is rejected. If empty, no message is sent. */
   message?: string
+  /**
+   * Seconds to wait before declining the call. If not set or undefined, the call is declined immediately (0 seconds).
+   * @min 0
+   */
+  waitBeforeDecline?: number
+  /**
+   * Seconds to wait before sending the auto-reply message. If not set or undefined, the message is sent immediately (0 seconds).
+   * @min 0
+   */
+  waitBeforeResponse?: number
 }
 
 export interface CallsAppConfig {
@@ -514,6 +524,10 @@ export interface ReplyToMessage {
   participant?: string
   /** @example "Hello!" */
   body?: string
+  /** Indicates if the message has media available for download */
+  hasMedia: boolean
+  /** Media object for the message if any and downloaded */
+  media?: WAMedia
   /** Raw data from reply's message */
   _data?: object
 }
