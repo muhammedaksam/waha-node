@@ -16,6 +16,7 @@ import {
   Base64File,
   QRCodeValue,
   RequestCodeRequest,
+  SessionActionsDTO,
   ApiKeyRequest,
   ApiKeyDTO,
   ChatWootCommandsConfig,
@@ -23,6 +24,7 @@ import {
   ChatWootAppConfig,
   CallsAppChannelConfig,
   CallsAppConfig,
+  McpAppConfig,
   App,
   MeInfo,
   ProxyConfig,
@@ -92,6 +94,7 @@ import {
   WANumberExistResult,
   MessageReplyRequest,
   MessageLinkPreviewRequest,
+  NewMessageIDResponse,
   ChatSummary,
   GetChatsOverviewParams,
   OverviewFilter,
@@ -117,7 +120,6 @@ import {
   VoiceStatus,
   VideoStatus,
   DeleteStatusRequest,
-  NewMessageIDResponse,
   Label,
   LabelBody,
   LabelID,
@@ -295,6 +297,19 @@ export class Apps<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
       path: `/api/apps/${id}`,
       method: 'DELETE',
       secure: true,
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 🧩 Apps
+   * @name McpControllerPost
+   * @request POST:/mcp
+   */
+  mcpControllerPost = (params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/mcp`,
+      method: 'POST',
       ...params,
     })
 }

@@ -16,6 +16,7 @@ import {
   Base64File,
   QRCodeValue,
   RequestCodeRequest,
+  SessionActionsDTO,
   ApiKeyRequest,
   ApiKeyDTO,
   ChatWootCommandsConfig,
@@ -23,6 +24,7 @@ import {
   ChatWootAppConfig,
   CallsAppChannelConfig,
   CallsAppConfig,
+  McpAppConfig,
   App,
   MeInfo,
   ProxyConfig,
@@ -92,6 +94,7 @@ import {
   WANumberExistResult,
   MessageReplyRequest,
   MessageLinkPreviewRequest,
+  NewMessageIDResponse,
   ChatSummary,
   GetChatsOverviewParams,
   OverviewFilter,
@@ -117,7 +120,6 @@ import {
   VoiceStatus,
   VideoStatus,
   DeleteStatusRequest,
-  NewMessageIDResponse,
   Label,
   LabelBody,
   LabelID,
@@ -709,6 +711,23 @@ export class Chatting<SecurityDataType = unknown> extends HttpClient<SecurityDat
       body: data,
       secure: true,
       type: ContentType.Json,
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 📤 Chatting
+   * @name ChattingControllerGetNewMessageId
+   * @summary Generate a new message ID
+   * @request GET:/api/{session}/new-message-id
+   * @secure
+   */
+  chattingControllerGetNewMessageId = (session: any, params: RequestParams = {}) =>
+    this.request<NewMessageIDResponse, any>({
+      path: `/api/${session}/new-message-id`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
       ...params,
     })
 }

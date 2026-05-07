@@ -32,6 +32,21 @@ export interface RequestCodeRequest {
   method?: string
 }
 
+export interface SessionActionsDTO {
+  /** Read session data (messages, contacts, chats, groups, etc.) */
+  read?: boolean
+  /** Send messages and manage session entities (groups, labels, channels, contacts, profile) */
+  send?: boolean
+  /** Session lifecycle: start, stop, restart, logout, authenticate */
+  control?: boolean
+  /** Session config: update session settings */
+  setting?: boolean
+  /** Manage apps */
+  app?: boolean
+  /** Delete the session */
+  delete?: boolean
+}
+
 export interface ApiKeyRequest {
   /**
    * @default false
@@ -48,6 +63,8 @@ export interface ApiKeyRequest {
    * @example true
    */
   isActive: boolean
+  /** @default null */
+  actions?: SessionActionsDTO | null
 }
 
 export interface ApiKeyDTO {
@@ -61,6 +78,7 @@ export interface ApiKeyDTO {
   isAdmin: boolean
   /** @example "default" */
   session?: string | null
+  actions?: SessionActionsDTO | null
 }
 
 export interface ChatWootCommandsConfig {
@@ -128,6 +146,21 @@ export interface CallsAppConfig {
   group: CallsAppChannelConfig
 }
 
+export interface McpAppConfig {
+  /** Permission scopes for the generated API key. */
+  actions: SessionActionsDTO
+  /**
+   * ID of the API key created for this app. Read-only.
+   * @example "key_id_00000000000000000000000000"
+   */
+  key_id?: string | null
+  /**
+   * The API key value. Populated on read; not persisted in this record.
+   * @example "key_11111111111AAAAAAAAAAAAAAAAAAAAA"
+   */
+  key?: string | null
+}
+
 export interface App {
   /**
    * Enable or disable this app without deleting it. If omitted, treated as enabled (true).
@@ -136,7 +169,7 @@ export interface App {
   enabled?: boolean
   id: string
   session: string
-  app: 'chatwoot' | 'calls'
+  app: 'chatwoot' | 'calls' | 'mcp'
   config: object
 }
 
@@ -450,6 +483,12 @@ export interface ProfilePictureRequest {
 export interface MessageTextRequest {
   /** @example "11111111111@c.us" */
   chatId: string
+  /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
   /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
@@ -845,6 +884,12 @@ export interface SendListRequest {
 export interface MessageForwardRequest {
   /** @example "11111111111@c.us" */
   chatId: string
+  /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
   /** @example "false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA" */
   messageId: string
   /** @default "default" */
@@ -913,6 +958,12 @@ export interface MessagePollRequest {
   /** @example "11111111111@c.us" */
   chatId: string
   /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
+  /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
    */
@@ -943,6 +994,12 @@ export interface MessagePollVoteRequest {
 export interface MessageLocationRequest {
   /** @example "11111111111@c.us" */
   chatId: string
+  /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
   /** @example 38.8937255 */
   latitude: number
   /** @example -77.0969763 */
@@ -999,6 +1056,12 @@ export interface VCardContact {
 export interface MessageContactVcardRequest {
   /** @example "11111111111@c.us" */
   chatId: string
+  /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
   contacts: (VCardContact | Contact)[]
   /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
@@ -1033,6 +1096,12 @@ export interface MessageReplyRequest {
   /** @example "11111111111@c.us" */
   chatId: string
   /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
+  /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
    */
@@ -1050,10 +1119,24 @@ export interface MessageReplyRequest {
 export interface MessageLinkPreviewRequest {
   /** @example "11111111111@c.us" */
   chatId: string
-  /** @default "default" */
-  session: string
+  /**
+   * Pre-generated message id
+   * @default null
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id?: string
   url: string
   title: string
+  /** @default "default" */
+  session: string
+}
+
+export interface NewMessageIDResponse {
+  /**
+   * Pre-generated message id
+   * @example "BBBBBBBBBBBBBBBBB"
+   */
+  id: string
 }
 
 export interface ChatSummary {
@@ -1349,14 +1432,6 @@ export interface DeleteStatusRequest {
    * @example null
    */
   contacts?: string[]
-}
-
-export interface NewMessageIDResponse {
-  /**
-   * Pre-generated message id
-   * @example "BBBBBBBBBBBBBBBBB"
-   */
-  id: string
 }
 
 export interface Label {
