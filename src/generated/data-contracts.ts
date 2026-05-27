@@ -1169,7 +1169,7 @@ export interface OverviewFilter {
 
 export interface OverviewBodyRequest {
   pagination: GetChatsOverviewParams
-  filter: OverviewFilter
+  filter?: OverviewFilter
 }
 
 export interface ChatPictureResponse {
