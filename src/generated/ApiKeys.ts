@@ -16,9 +16,15 @@ import {
   Base64File,
   QRCodeValue,
   RequestCodeRequest,
+  PasskeyAllowedCredential,
+  PasskeyChallenge,
+  PasskeyAssertionResponseData,
+  PasskeyAssertionRequest,
+  PasskeyConfirmationResponse,
   SessionActionsDTO,
   ApiKeyRequest,
   ApiKeyDTO,
+  ScopedApiKeyRequest,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
@@ -238,6 +244,44 @@ export class ApiKeys<SecurityDataType = unknown> extends HttpClient<SecurityData
       path: `/api/keys`,
       method: 'GET',
       secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerMedia
+   * @summary Create or get a media-download-only API key for a session
+   * @request POST:/api/keys/media
+   * @secure
+   */
+  apiKeysControllerMedia = (data: ScopedApiKeyRequest, params: RequestParams = {}) =>
+    this.request<ApiKeyDTO, any>({
+      path: `/api/keys/media`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 🔑 Api Keys
+   * @name ApiKeysControllerControl
+   * @summary Create or get a control-only API key for a session
+   * @request POST:/api/keys/control
+   * @secure
+   */
+  apiKeysControllerControl = (data: ScopedApiKeyRequest, params: RequestParams = {}) =>
+    this.request<ApiKeyDTO, any>({
+      path: `/api/keys/control`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: 'json',
       ...params,
     })

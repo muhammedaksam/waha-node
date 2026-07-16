@@ -16,9 +16,15 @@ import {
   Base64File,
   QRCodeValue,
   RequestCodeRequest,
+  PasskeyAllowedCredential,
+  PasskeyChallenge,
+  PasskeyAssertionResponseData,
+  PasskeyAssertionRequest,
+  PasskeyConfirmationResponse,
   SessionActionsDTO,
   ApiKeyRequest,
   ApiKeyDTO,
+  ScopedApiKeyRequest,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
@@ -250,6 +256,78 @@ export class Pairing<SecurityDataType = unknown> extends HttpClient<SecurityData
       body: data,
       secure: true,
       type: ContentType.Json,
+      ...params,
+    })
+  /**
+   * @description Available while the session is in PASSKEY_REQUIRED status. Pass the challenge to navigator.credentials.get({ publicKey: challenge }) on the https://web.whatsapp.com origin.
+   *
+   * @tags 📱 Pairing
+   * @name AuthControllerGetPasskeyChallenge
+   * @summary Get the pending passkey (WebAuthn) challenge.
+   * @request GET:/api/{session}/auth/passkey/challenge
+   * @secure
+   */
+  authControllerGetPasskeyChallenge = (session: any, params: RequestParams = {}) =>
+    this.request<PasskeyChallenge, any>({
+      path: `/api/${session}/auth/passkey/challenge`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 📱 Pairing
+   * @name AuthControllerSubmitPasskey
+   * @summary Submit a WebAuthn passkey assertion to finish pairing.
+   * @request POST:/api/{session}/auth/passkey
+   * @secure
+   */
+  authControllerSubmitPasskey = (
+    session: any,
+    data: PasskeyAssertionRequest,
+    params: RequestParams = {},
+  ) =>
+    this.request<void, any>({
+      path: `/api/${session}/auth/passkey`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    })
+  /**
+   * @description Available while the session is in PASSKEY_CONFIRMATION_REQUIRED status. Most pairings skip this step - WhatsApp confirms them right after the assertion.
+   *
+   * @tags 📱 Pairing
+   * @name AuthControllerGetPasskeyConfirmation
+   * @summary Get the pending passkey confirmation code.
+   * @request GET:/api/{session}/auth/passkey/confirmation
+   * @secure
+   */
+  authControllerGetPasskeyConfirmation = (session: any, params: RequestParams = {}) =>
+    this.request<PasskeyConfirmationResponse, any>({
+      path: `/api/${session}/auth/passkey/confirmation`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 📱 Pairing
+   * @name AuthControllerConfirmPasskey
+   * @summary Confirm passkey pairing (only needed for the manual code case).
+   * @request POST:/api/{session}/auth/passkey/confirm
+   * @secure
+   */
+  authControllerConfirmPasskey = (session: any, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/${session}/auth/passkey/confirm`,
+      method: 'POST',
+      secure: true,
       ...params,
     })
   /**

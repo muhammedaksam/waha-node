@@ -32,6 +32,73 @@ export interface RequestCodeRequest {
   method?: string
 }
 
+export interface PasskeyAllowedCredential {
+  /** Base64url-encoded credential ID. */
+  id: string
+  /**
+   * Always "public-key".
+   * @example "public-key"
+   */
+  type: string
+  /**
+   * Authenticator transports the credential supports.
+   * @example ["internal","hybrid"]
+   */
+  transports?: string[]
+}
+
+export interface PasskeyChallenge {
+  /** Base64url-encoded challenge to sign. */
+  challenge: string
+  /**
+   * How long the challenge is valid for, in milliseconds.
+   * @example 60000
+   */
+  timeout: number
+  /**
+   * Relying party ID.
+   * @example "web.whatsapp.com"
+   */
+  rpId: string
+  allowCredentials: PasskeyAllowedCredential[]
+  /** @example "required" */
+  userVerification: string
+  /** WebAuthn extensions requested by WhatsApp. */
+  extensions?: object
+}
+
+export interface PasskeyAssertionResponseData {
+  /** Base64url-encoded clientDataJSON from the authenticator. */
+  clientDataJSON: string
+  /** Base64url-encoded authenticatorData from the authenticator. */
+  authenticatorData: string
+  /** Base64url-encoded signature from the authenticator. */
+  signature: string
+  /** Base64url-encoded user handle, if returned by the authenticator. */
+  userHandle?: string
+}
+
+export interface PasskeyAssertionRequest {
+  /** Credential ID, as returned by navigator.credentials.get().toJSON(). */
+  id: string
+  /** Base64url-encoded raw credential ID. */
+  rawId: string
+  /**
+   * Always "public-key".
+   * @example "public-key"
+   */
+  type: string
+  response: PasskeyAssertionResponseData
+}
+
+export interface PasskeyConfirmationResponse {
+  /**
+   * The code the user must verify against the one shown on their phone.
+   * @example "1234"
+   */
+  code: string
+}
+
 export interface SessionActionsDTO {
   /** Read session data (messages, contacts, chats, groups, etc.) */
   read?: boolean
@@ -79,6 +146,11 @@ export interface ApiKeyDTO {
   /** @example "default" */
   session?: string | null
   actions?: SessionActionsDTO | null
+}
+
+export interface ScopedApiKeyRequest {
+  /** @example "default" */
+  session: string
 }
 
 export interface ChatWootCommandsConfig {
@@ -352,7 +424,14 @@ export interface SessionInfo {
   timestamps: {
     activity: number | null
   }
-  status: 'STOPPED' | 'STARTING' | 'SCAN_QR_CODE' | 'WORKING' | 'FAILED'
+  status:
+    | 'STOPPED'
+    | 'STARTING'
+    | 'SCAN_QR_CODE'
+    | 'PASSKEY_REQUIRED'
+    | 'PASSKEY_CONFIRMATION_REQUIRED'
+    | 'WORKING'
+    | 'FAILED'
   config?: SessionConfig
 }
 
@@ -379,7 +458,14 @@ export interface SessionDTO {
    * @example "default"
    */
   name: string
-  status: 'STOPPED' | 'STARTING' | 'SCAN_QR_CODE' | 'WORKING' | 'FAILED'
+  status:
+    | 'STOPPED'
+    | 'STARTING'
+    | 'SCAN_QR_CODE'
+    | 'PASSKEY_REQUIRED'
+    | 'PASSKEY_CONFIRMATION_REQUIRED'
+    | 'WORKING'
+    | 'FAILED'
   config?: SessionConfig
 }
 
@@ -1751,14 +1837,35 @@ export interface VideoFileDTO {
 }
 
 export interface SessionStatusPoint {
-  status: 'STOPPED' | 'STARTING' | 'SCAN_QR_CODE' | 'WORKING' | 'FAILED'
+  status:
+    | 'STOPPED'
+    | 'STARTING'
+    | 'SCAN_QR_CODE'
+    | 'PASSKEY_REQUIRED'
+    | 'PASSKEY_CONFIRMATION_REQUIRED'
+    | 'WORKING'
+    | 'FAILED'
   timestamp: number
 }
 
 export interface WASessionStatusBody {
   /** @example "default" */
   name: string
-  status: 'STOPPED' | 'STARTING' | 'SCAN_QR_CODE' | 'WORKING' | 'FAILED'
+  /**
+   * Extra info that belongs to the current status, null for most of them.
+   * PASSKEY_REQUIRED - the WebAuthn challenge, pass it to navigator.credentials.get({ publicKey: data }).
+   * PASSKEY_CONFIRMATION_REQUIRED - { code } - the code to verify against the phone.
+   * @example null
+   */
+  data?: object | null
+  status:
+    | 'STOPPED'
+    | 'STARTING'
+    | 'SCAN_QR_CODE'
+    | 'PASSKEY_REQUIRED'
+    | 'PASSKEY_CONFIRMATION_REQUIRED'
+    | 'WORKING'
+    | 'FAILED'
   statuses: SessionStatusPoint[]
 }
 
