@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - main
-  workflow_dispatch:
 
 permissions:
   id-token: write # Required for OIDC trusted publishing
@@ -50,11 +47,7 @@ jobs:
       # Prereleases are published with extracted tag (e.g., v1.0.0-dev.1 → --tag dev)
       - name: Publish to npm
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/v}"
-          else
-            VERSION=$(node -p "require('./package.json').version")
-          fi
+          VERSION="${GITHUB_REF#refs/tags/v}"
           if [[ "$VERSION" == *"-"* ]]; then
             # Extract tag name: 1.0.0-dev.1 → dev, 1.0.0-beta.2 → beta
             PRERELEASE="${VERSION#*-}"  # dev.1 or beta.2
