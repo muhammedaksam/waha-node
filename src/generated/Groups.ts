@@ -32,6 +32,7 @@ import {
   CallsAppConfig,
   McpAppConfig,
   App,
+  ReachoutTimelockData,
   MeInfo,
   ProxyConfig,
   IgnoreConfig,
@@ -141,6 +142,7 @@ import {
   DescriptionRequest,
   SubjectRequest,
   SettingsSecurityChangeInfo,
+  SettingsMemberAddMode,
   GroupParticipant,
   ParticipantsRequest,
   WAHASessionPresence,
@@ -584,6 +586,46 @@ export class Groups<SecurityDataType = unknown> extends HttpClient<SecurityDataT
   groupsControllerGetMessagesAdminOnly = (session: any, id: string, params: RequestParams = {}) =>
     this.request<SettingsSecurityChangeInfo, any>({
       path: `/api/${session}/groups/${id}/settings/security/messages-admin-only`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Updates the group settings for who can add new members to the group - all members or admins only.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerSetMemberAddMode
+   * @summary Update settings - who can add new members
+   * @request PUT:/api/{session}/groups/{id}/settings/security/member-add-mode
+   * @secure
+   */
+  groupsControllerSetMemberAddMode = (
+    session: any,
+    id: string,
+    data: SettingsMemberAddMode,
+    params: RequestParams = {},
+  ) =>
+    this.request<void, any>({
+      path: `/api/${session}/groups/${id}/settings/security/member-add-mode`,
+      method: 'PUT',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    })
+  /**
+   * @description The group settings for who can add new members to the group - all members or admins only.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerGetMemberAddMode
+   * @summary Get settings - who can add new members
+   * @request GET:/api/{session}/groups/{id}/settings/security/member-add-mode
+   * @secure
+   */
+  groupsControllerGetMemberAddMode = (session: any, id: string, params: RequestParams = {}) =>
+    this.request<SettingsMemberAddMode, any>({
+      path: `/api/${session}/groups/${id}/settings/security/member-add-mode`,
       method: 'GET',
       secure: true,
       format: 'json',

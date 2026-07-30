@@ -245,6 +245,40 @@ export interface App {
   config: object
 }
 
+export interface ReachoutTimelockData {
+  /**
+   * Raw WhatsApp enforcement type. Informational only - it does not change what is blocked. WhatsApp may introduce new values, so treat it as an open set.
+   * @example "RESTRICT_ALL_COMPANIONS"
+   */
+  enforcementType:
+    | 'DEFAULT'
+    | 'BIZ_QUALITY'
+    | 'BIZ_COMMERCE_VIOLATION_ADULT'
+    | 'BIZ_COMMERCE_VIOLATION_ALCOHOL'
+    | 'BIZ_COMMERCE_VIOLATION_ANIMALS'
+    | 'BIZ_COMMERCE_VIOLATION_BODY_PARTS_FLUIDS'
+    | 'BIZ_COMMERCE_VIOLATION_DATING'
+    | 'BIZ_COMMERCE_VIOLATION_DIGITAL_SERVICES_PRODUCTS'
+    | 'BIZ_COMMERCE_VIOLATION_DRUGS'
+    | 'BIZ_COMMERCE_VIOLATION_DRUGS_ONLY_OTC'
+    | 'BIZ_COMMERCE_VIOLATION_GAMBLING'
+    | 'BIZ_COMMERCE_VIOLATION_HEALTHCARE'
+    | 'BIZ_COMMERCE_VIOLATION_REAL_FAKE_CURRENCY'
+    | 'BIZ_COMMERCE_VIOLATION_SUPPLEMENTS'
+    | 'BIZ_COMMERCE_VIOLATION_TOBACCO'
+    | 'BIZ_COMMERCE_VIOLATION_VIOLENT_CONTENT'
+    | 'BIZ_COMMERCE_VIOLATION_WEAPONS'
+    | 'WEB_COMPANION_ONLY'
+    | 'RESTRICT_ALL_COMPANIONS'
+  /** @example true */
+  isActive: boolean
+  /**
+   * Unix timestamp (seconds) when the enforcement ends.
+   * @example 1784477333
+   */
+  timeEnforcementEnds: number | null
+}
+
 export interface MeInfo {
   /** @example "11111111111@c.us" */
   id: string
@@ -255,6 +289,8 @@ export interface MeInfo {
    * @example "123123:123@s.whatsapp.net"
    */
   jid?: string
+  /** WhatsApp reachout timelock (account restriction) info. Null if no enforcement has been seen for the account. */
+  reachoutTimelock?: ReachoutTimelockData | null
   pushName: string
 }
 
@@ -1652,6 +1688,11 @@ export interface SettingsSecurityChangeInfo {
   adminsOnly: boolean
 }
 
+export interface SettingsMemberAddMode {
+  /** @default true */
+  membersCanAddNewMember: boolean
+}
+
 export interface GroupParticipant {
   /**
    * Member ID in @c.us or @lid format
@@ -1855,6 +1896,7 @@ export interface WASessionStatusBody {
    * Extra info that belongs to the current status, null for most of them.
    * PASSKEY_REQUIRED - the WebAuthn challenge, pass it to navigator.credentials.get({ publicKey: data }).
    * PASSKEY_CONFIRMATION_REQUIRED - { code } - the code to verify against the phone.
+   * WORKING - { reachoutTimelock } - present when WhatsApp restricts the account from messaging new contacts (the cause of 463 errors on send); the session stays connected and the restriction lifts automatically.
    * @example null
    */
   data?: object | null
