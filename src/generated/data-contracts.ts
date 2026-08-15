@@ -279,6 +279,44 @@ export interface ReachoutTimelockData {
   timeEnforcementEnds: number | null
 }
 
+export interface MessageCappingData {
+  /**
+   * How close the account is to its new-chat quota. CAPPED means new chats are blocked. WhatsApp may introduce new values, so treat it as an open set.
+   * @example "FIRST_WARNING"
+   */
+  cappingStatus: 'NONE' | 'FIRST_WARNING' | 'SECOND_WARNING' | 'CAPPED'
+  /**
+   * New-chat messages allowed in the current cycle. -1 when the account has no cap.
+   * @example 1000
+   */
+  totalQuota: number
+  /**
+   * New-chat messages already used in the current cycle.
+   * @example 640
+   */
+  usedQuota: number
+  /**
+   * Unix timestamp (seconds) when the current cycle started.
+   * @example 1782874800
+   */
+  cycleStart: number | null
+  /**
+   * Unix timestamp (seconds) when the current cycle ends.
+   * @example 1785553199
+   */
+  cycleEnd: number | null
+  /**
+   * Meta Verified status. Informational.
+   * @example "NOT_ELIGIBLE"
+   */
+  mvStatus: string | null
+  /**
+   * One-time engagement status. Informational.
+   * @example "NOT_ELIGIBLE"
+   */
+  oteStatus: string | null
+}
+
 export interface MeInfo {
   /** @example "11111111111@c.us" */
   id: string
@@ -291,6 +329,8 @@ export interface MeInfo {
   jid?: string
   /** WhatsApp reachout timelock (account restriction) info. Null if no enforcement has been seen for the account. */
   reachoutTimelock?: ReachoutTimelockData | null
+  /** WhatsApp new-chat message capping (per-cycle quota) info. Null until the capping state has been fetched for the account. */
+  messageCapping?: MessageCappingData | null
   pushName: string
 }
 
@@ -365,6 +405,16 @@ export interface GowsStorageConfig {
    * @example true
    */
   labels?: boolean | null
+  /**
+   * Store contacts locally. Set to false to disable; omit or null to keep enabled. When disabled: contacts API returns no data, no contact names in chats, no PushName/BusinessName events, and sending status to all contacts does not work.
+   * @example true
+   */
+  contacts?: boolean | null
+  /**
+   * Store message secrets locally. Set to false to disable; omit or null to keep enabled. When disabled: incoming poll votes, event responses and bot messages can not be decrypted, and sending own poll votes does not work.
+   * @example true
+   */
+  messageSecrets?: boolean | null
 }
 
 export interface GowsConfig {
@@ -439,7 +489,7 @@ export interface SessionConfig {
   client?: ClientSessionConfig
   /** @example {"store":{"enabled":true,"fullSync":false}} */
   noweb?: NowebConfig
-  /** @example {"storage":{"messages":true,"groups":true,"chats":true,"labels":true}} */
+  /** @example {"storage":{"messages":true,"groups":true,"chats":true,"labels":true,"contacts":true,"messageSecrets":true}} */
   gows?: GowsConfig
   /** WebJS-specific settings. */
   webjs?: WebjsConfig
@@ -1211,6 +1261,11 @@ export interface MessageButtonReply {
 export interface WANumberExistResult {
   /** @example "Chat id for the phone number. Undefined if the number does not exist" */
   chatId?: string
+  /**
+   * Phone number id (@c.us). Can be null when only a @lid chatId is known
+   * @example "11111111111@c.us"
+   */
+  pn?: string
   numberExists: boolean
 }
 

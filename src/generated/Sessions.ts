@@ -33,6 +33,7 @@ import {
   McpAppConfig,
   App,
   ReachoutTimelockData,
+  MessageCappingData,
   MeInfo,
   ProxyConfig,
   IgnoreConfig,
@@ -337,6 +338,40 @@ export class Sessions<SecurityDataType = unknown> extends HttpClient<SecurityDat
   sessionsControllerGetMe = (session: any, params: RequestParams = {}) =>
     this.request<MeInfo, any>({
       path: `/api/sessions/${session}/me`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Fetch a fresh new-chat message capping (quota) state from WhatsApp. The same value is also available under me.messageCapping in the session info, and changes are pushed through the session.status event.
+   *
+   * @tags 🖥️ Sessions
+   * @name SessionsControllerFetchMessageCapping
+   * @summary Fetch the account new-chat message capping (per-cycle quota)
+   * @request GET:/api/sessions/{session}/capping
+   * @secure
+   */
+  sessionsControllerFetchMessageCapping = (session: any, params: RequestParams = {}) =>
+    this.request<MessageCappingData, any>({
+      path: `/api/sessions/${session}/capping`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Fetch a fresh reachout timelock state from WhatsApp - the restriction behind "server returned error 463" when messaging new contacts. The same value is also available under me.reachoutTimelock in the session info, and changes are pushed through the session.status event.
+   *
+   * @tags 🖥️ Sessions
+   * @name SessionsControllerFetchReachoutTimelock
+   * @summary Fetch the account reachout timelock state
+   * @request GET:/api/sessions/{session}/timelock
+   * @secure
+   */
+  sessionsControllerFetchReachoutTimelock = (session: any, params: RequestParams = {}) =>
+    this.request<ReachoutTimelockData, any>({
+      path: `/api/sessions/${session}/timelock`,
       method: 'GET',
       secure: true,
       format: 'json',

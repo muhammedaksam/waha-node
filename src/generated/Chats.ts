@@ -33,6 +33,7 @@ import {
   McpAppConfig,
   App,
   ReachoutTimelockData,
+  MessageCappingData,
   MeInfo,
   ProxyConfig,
   IgnoreConfig,
