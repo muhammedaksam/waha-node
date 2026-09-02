@@ -229,23 +229,91 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class Calls<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class AppsBrazilianPhoneNumbers<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
-   * No description
+   * @description Entries from the in-memory cache tier of the running session, sorted by key. The session must be running.
    *
-   * @tags 📞 Calls
-   * @name CallsControllerRejectCall
-   * @summary Reject incoming call
-   * @request POST:/api/{session}/calls/reject
+   * @tags 🧩 Apps: Brazilian Phone Numbers
+   * @name BrazilianPhoneNumbersControllerMemory
+   * @summary List in-memory cache entries
+   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/memory
    * @secure
    */
-  callsControllerRejectCall = (session: any, data: RejectCallRequest, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/calls/reject`,
-      method: 'POST',
-      body: data,
+  brazilianPhoneNumbersControllerMemory = (
+    session: any,
+    query?: {
+      limit?: number
+      offset?: number
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<BrazilianPhoneMemoryCacheEntry[], any>({
+      path: `/api/apps/brazilian-phone-numbers/${session}/cache/memory`,
+      method: 'GET',
+      query: query,
       secure: true,
-      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Entries from the persistent (database) cache tier, sorted by id. Works even when the session is stopped.
+   *
+   * @tags 🧩 Apps: Brazilian Phone Numbers
+   * @name BrazilianPhoneNumbersControllerDb
+   * @summary List persistent cache entries
+   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/db
+   * @secure
+   */
+  brazilianPhoneNumbersControllerDb = (
+    session: any,
+    query?: {
+      limit?: number
+      offset?: number
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<BrazilianPhoneDbCacheEntry[], any>({
+      path: `/api/apps/brazilian-phone-numbers/${session}/cache/db`,
+      method: 'GET',
+      query: query,
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Stats for both cache tiers. "memory" is null when the session is not running, "db" is null when the persistent cache is disabled.
+   *
+   * @tags 🧩 Apps: Brazilian Phone Numbers
+   * @name BrazilianPhoneNumbersControllerStats
+   * @summary Get cache stats
+   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/stats
+   * @secure
+   */
+  brazilianPhoneNumbersControllerStats = (session: any, params: RequestParams = {}) =>
+    this.request<BrazilianPhoneCacheStatsResponse, any>({
+      path: `/api/apps/brazilian-phone-numbers/${session}/cache/stats`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Removes ALL persistent cache entries and clears the in-memory tier (the in-memory tier only when the session is running).
+   *
+   * @tags 🧩 Apps: Brazilian Phone Numbers
+   * @name BrazilianPhoneNumbersControllerPurge
+   * @summary Purge the resolved-numbers cache
+   * @request DELETE:/api/apps/brazilian-phone-numbers/{session}/cache/purge
+   * @secure
+   */
+  brazilianPhoneNumbersControllerPurge = (session: any, params: RequestParams = {}) =>
+    this.request<BrazilianPhoneCachePurgeResponse, any>({
+      path: `/api/apps/brazilian-phone-numbers/${session}/cache/purge`,
+      method: 'DELETE',
+      secure: true,
+      format: 'json',
       ...params,
     })
 }

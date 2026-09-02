@@ -229,23 +229,18 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class Calls<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class AppsMcp<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
-   * @tags 📞 Calls
-   * @name CallsControllerRejectCall
-   * @summary Reject incoming call
-   * @request POST:/api/{session}/calls/reject
-   * @secure
+   * @tags 🧩 Apps: MCP
+   * @name McpControllerPost
+   * @request POST:/mcp
    */
-  callsControllerRejectCall = (session: any, data: RejectCallRequest, params: RequestParams = {}) =>
+  mcpControllerPost = (params: RequestParams = {}) =>
     this.request<void, any>({
-      path: `/api/${session}/calls/reject`,
+      path: `/mcp`,
       method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
       ...params,
     })
 }

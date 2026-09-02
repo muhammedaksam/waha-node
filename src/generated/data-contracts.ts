@@ -153,36 +153,42 @@ export interface ScopedApiKeyRequest {
   session: string
 }
 
-export interface ChatWootCommandsConfig {
-  /** @default true */
-  server: boolean
-  /** @default false */
-  queue?: boolean
-}
-
-export interface ChatWootConversationsConfig {
+export interface BrazilianPhoneNumbersCacheConfig {
   /**
-   * Process message.ack events to mark ChatWoot conversations as read. Enabled by default.
+   * TTL for resolved numbers in the in-memory cache tier, as a duration string.
+   * @default "24h"
+   * @example "24h"
+   */
+  memoryTtl?: string
+  /**
+   * Persist verified resolutions in the database so they survive session restarts. Unverified best-guesses and negatives are never persisted.
    * @default true
    */
-  markAsRead?: boolean
-  sort: 'activity_newest' | 'created_newest' | 'created_oldest' | 'activity_oldest'
-  status: ('open' | 'pending' | 'snoozed' | 'resolved')[] | null
+  persistent?: boolean
+  /**
+   * TTL for resolved numbers in the database cache tier, as a duration string.
+   * @default "31d"
+   * @example "31d"
+   */
+  persistentTtl?: string
 }
 
-export interface ChatWootAppConfig {
-  url: string
-  accountId: number
-  accountToken: string
-  inboxId: number
-  inboxIdentifier: string
-  /** @default "OFF" */
-  linkPreview?: 'OFF' | 'LG' | 'HG'
-  /** @default "en-US" */
-  locale: string
-  templates?: object
-  commands?: ChatWootCommandsConfig
-  conversations?: ChatWootConversationsConfig
+export interface BrazilianPhoneNumbersAppConfig {
+  /**
+   * When a Brazilian mobile number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
+   * @default false
+   */
+  strict?: boolean
+  /**
+   * Allow the WhatsApp server lookup tier for numbers the cache and the local contact store cannot resolve. When false, unresolved numbers are sent as provided.
+   * @default true
+   */
+  lookup?: boolean
+  /**
+   * Cache tuning for resolved numbers.
+   * @default {"memoryTtl":"24h","persistent":true,"persistentTtl":"31d"}
+   */
+  cache?: BrazilianPhoneNumbersCacheConfig
 }
 
 export interface CallsAppChannelConfig {
@@ -218,6 +224,38 @@ export interface CallsAppConfig {
   group: CallsAppChannelConfig
 }
 
+export interface ChatWootCommandsConfig {
+  /** @default true */
+  server: boolean
+  /** @default false */
+  queue?: boolean
+}
+
+export interface ChatWootConversationsConfig {
+  /**
+   * Process message.ack events to mark ChatWoot conversations as read. Enabled by default.
+   * @default true
+   */
+  markAsRead?: boolean
+  sort: 'activity_newest' | 'created_newest' | 'created_oldest' | 'activity_oldest'
+  status: ('open' | 'pending' | 'snoozed' | 'resolved')[] | null
+}
+
+export interface ChatWootAppConfig {
+  url: string
+  accountId: number
+  accountToken: string
+  inboxId: number
+  inboxIdentifier: string
+  /** @default "OFF" */
+  linkPreview?: 'OFF' | 'LG' | 'HG'
+  /** @default "en-US" */
+  locale: string
+  templates?: object
+  commands?: ChatWootCommandsConfig
+  conversations?: ChatWootConversationsConfig
+}
+
 export interface McpAppConfig {
   /** Permission scopes for the generated API key. */
   actions: SessionActionsDTO
@@ -241,7 +279,7 @@ export interface App {
   enabled?: boolean
   id: string
   session: string
-  app: 'chatwoot' | 'calls' | 'mcp'
+  app: 'chatwoot' | 'calls' | 'mcp' | 'brazilian-phone-numbers'
   config: object
 }
 
@@ -559,6 +597,20 @@ export interface SessionUpdateRequest {
   /** Apps to be synchronized for this session. */
   apps?: App[] | null
   config?: SessionConfig
+}
+
+export interface SessionLogoutAppsOptions {
+  /**
+   * Purge the session apps' storage (messages, caches) as part of logout.
+   * @default false
+   * @example false
+   */
+  purge?: boolean
+}
+
+export interface SessionLogoutRequest {
+  /** Options for the session apps during logout. */
+  apps?: SessionLogoutAppsOptions
 }
 
 export interface SessionStartDeprecatedRequest {
@@ -931,6 +983,19 @@ export interface MessageVideoRequest {
   convert: boolean
   /** @default "Just watch at this!" */
   caption?: string
+  /** @default "default" */
+  session: string
+}
+
+export interface MessageStickerRequest {
+  /** @example "11111111111@c.us" */
+  chatId: string
+  file: RemoteFile | BinaryFile
+  /**
+   * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
+   * @example null
+   */
+  reply_to?: string
   /** @default "default" */
   session: string
 }
@@ -1748,6 +1813,60 @@ export interface SettingsMemberAddMode {
   membersCanAddNewMember: boolean
 }
 
+export interface SettingsMembershipApproval {
+  /** @default false */
+  newMembersApprovalRequired: boolean
+}
+
+export interface GroupJoinRequest {
+  /**
+   * ID of the user requesting to join the group
+   * @example "123456789@c.us"
+   */
+  requesterId: string
+  /**
+   * Phone number ID of the requester, if known
+   * @example "123456789@c.us"
+   */
+  requesterPn?: string | null
+  /**
+   * ID of the user who created the request
+   * @example "123456789@c.us"
+   */
+  addedById: string | null
+  /**
+   * ID of the parent community group, if present
+   * @example "123456789@g.us"
+   */
+  parentGroupId: string | null
+  /**
+   * How the request was created, for example non_admin_add, invite_link, or linked_group_join
+   * @example "invite_link"
+   */
+  requestMethod: string | null
+  /**
+   * Unix timestamp when the request was created
+   * @example 1666943582
+   */
+  timestamp: number
+}
+
+export interface ParticipantsRequest {
+  participants: Participant[]
+}
+
+export interface GroupJoinRequestResult {
+  /**
+   * ID of the participant the action was applied to
+   * @example "123456789@c.us"
+   */
+  requesterId: string | null
+  /** @example true */
+  success: boolean
+  /** @example 404 */
+  error?: number
+}
+
 export interface GroupParticipant {
   /**
    * Member ID in @c.us or @lid format
@@ -1761,10 +1880,6 @@ export interface GroupParticipant {
   pn?: string
   /** @example "participant" */
   role: 'left' | 'participant' | 'admin' | 'superadmin'
-}
-
-export interface ParticipantsRequest {
-  participants: Participant[]
 }
 
 export interface WAHASessionPresence {
@@ -1932,6 +2047,58 @@ export interface VideoFileDTO {
   data?: string
 }
 
+export interface BrazilianPhoneMemoryCacheEntry {
+  /** Phone number digits the cache entry is keyed by */
+  key: string
+  /** Resolved chat id. An empty string is a confirmed-negative - the number is verified NOT to exist on WhatsApp. */
+  chatId: string
+  /**
+   * When the entry expires; null when it has no TTL
+   * @format date-time
+   */
+  expiresAt: string | null
+}
+
+export interface BrazilianPhoneDbCacheEntry {
+  /** Record id */
+  id: number
+  /** Phone number digits the cache entry is keyed by */
+  key: string
+  /** Resolved chat id */
+  chatId: string
+  /** Whether the resolution was verified against WhatsApp */
+  verified: boolean
+  /**
+   * When the number was resolved
+   * @format date-time
+   */
+  resolvedAt: string
+}
+
+export interface BrazilianPhoneMemoryCacheStats {
+  /** Number of entries in the in-memory cache */
+  total: number
+}
+
+export interface BrazilianPhoneDbCacheStats {
+  /** Total number of entries in the persistent cache */
+  total: number
+  /** Number of entries verified against WhatsApp */
+  verified: number
+}
+
+export interface BrazilianPhoneCacheStatsResponse {
+  /** In-memory cache stats; null when the session is not running */
+  memory: BrazilianPhoneMemoryCacheStats | null
+  /** Persistent cache stats; null when the persistent cache is disabled */
+  db: BrazilianPhoneDbCacheStats | null
+}
+
+export interface BrazilianPhoneCachePurgeResponse {
+  /** Number of entries removed from the persistent cache */
+  deleted: number
+}
+
 export interface SessionStatusPoint {
   status:
     | 'STOPPED'
@@ -2007,6 +2174,7 @@ export interface WAHAWebhookSessionStatus {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2067,6 +2235,7 @@ export interface WAHAWebhookMessage {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2174,6 +2343,7 @@ export interface WAHAWebhookMessageReaction {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2234,6 +2404,7 @@ export interface WAHAWebhookMessageAny {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2312,6 +2483,7 @@ export interface WAHAWebhookMessageAck {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2372,6 +2544,7 @@ export interface WAHAWebhookMessageAckGroup {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2443,6 +2616,7 @@ export interface WAHAWebhookMessageRevoked {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2568,6 +2742,7 @@ export interface WAHAWebhookMessageEdited {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2659,6 +2834,7 @@ export interface WebhookGroupV2Join {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2734,6 +2910,7 @@ export interface WebhookGroupV2Leave {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2804,6 +2981,7 @@ export interface WebhookGroupV2Update {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2877,6 +3055,7 @@ export interface WebhookGroupV2Participants {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -2892,6 +3071,97 @@ export interface WebhookGroupV2Participants {
     | 'event.response.failed'
     | 'engine.event'
   payload: GroupV2ParticipantsEvent
+  me?: MeInfo
+  environment: WAHAEnvironment
+}
+
+export interface GroupV2ParticipantsJoinRequestEvent {
+  /**
+   * What happened to the request to join the group
+   * @example "created"
+   */
+  action: 'created' | 'rejected' | 'revoked'
+  /**
+   * ID of the user requesting to join the group
+   * @example "123456789@lid"
+   */
+  requesterId: string
+  /**
+   * Phone number ID of the requester, if known
+   * @example "123456789@c.us"
+   */
+  requesterPn?: string | null
+  /**
+   * How the request was created, for example non_admin_add, invite_link, or linked_group_join
+   * @example "invite_link"
+   */
+  requestMethod?: string | null
+  /**
+   * Unix timestamp
+   * @example 1666943582
+   */
+  timestamp: number
+  group: GroupId
+  _data: object
+}
+
+export interface WebhookGroupV2ParticipantsJoinRequest {
+  /**
+   * Unique identifier for the event - lower case ULID format. https://github.com/ulid/spec
+   * @example "evt_01aaaaaaaaaaaaaaaaaaaaaaaa"
+   */
+  id: string
+  /**
+   * Unix timestamp (ms) for when the event was created.
+   * @example 1634567890123
+   */
+  timestamp: number
+  /** @example "default" */
+  session: string
+  /**
+   * Metadata for the session.
+   * @example {"user.id":"123","user.email":"email@example.com"}
+   */
+  metadata?: object
+  /** @example "WEBJS" */
+  engine: 'WEBJS' | 'WPP' | 'NOWEB' | 'GOWS'
+  /**
+   * When a user requests to join a group
+   * @default "group.v2.participants.join-request"
+   */
+  event:
+    | 'session.status'
+    | 'message'
+    | 'message.reaction'
+    | 'message.any'
+    | 'message.ack'
+    | 'message.ack.group'
+    | 'message.waiting'
+    | 'message.revoked'
+    | 'message.edited'
+    | 'state.change'
+    | 'group.join'
+    | 'group.leave'
+    | 'group.v2.join'
+    | 'group.v2.leave'
+    | 'group.v2.update'
+    | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
+    | 'presence.update'
+    | 'poll.vote'
+    | 'poll.vote.failed'
+    | 'chat.archive'
+    | 'call.received'
+    | 'call.accepted'
+    | 'call.rejected'
+    | 'label.upsert'
+    | 'label.deleted'
+    | 'label.chat.added'
+    | 'label.chat.deleted'
+    | 'event.response'
+    | 'event.response.failed'
+    | 'engine.event'
+  payload: GroupV2ParticipantsJoinRequestEvent
   me?: MeInfo
   environment: WAHAEnvironment
 }
@@ -2937,6 +3207,7 @@ export interface WAHAWebhookPresenceUpdate {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3037,6 +3308,7 @@ export interface WAHAWebhookPollVote {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3097,6 +3369,7 @@ export interface WAHAWebhookPollVoteFailed {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3164,6 +3437,7 @@ export interface WAHAWebhookChatArchive {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3238,6 +3512,7 @@ export interface WAHAWebhookCallReceived {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3298,6 +3573,7 @@ export interface WAHAWebhookCallAccepted {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3358,6 +3634,7 @@ export interface WAHAWebhookCallRejected {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3418,6 +3695,7 @@ export interface WAHAWebhookLabelUpsert {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3478,6 +3756,7 @@ export interface WAHAWebhookLabelDeleted {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3552,6 +3831,7 @@ export interface WAHAWebhookLabelChatAdded {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3612,6 +3892,7 @@ export interface WAHAWebhookLabelChatDeleted {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3717,6 +3998,7 @@ export interface WAHAWebhookEventResponse {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3777,6 +4059,7 @@ export interface WAHAWebhookEventResponseFailed {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3842,6 +4125,7 @@ export interface WAHAWebhookEngineEvent {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3903,6 +4187,7 @@ export interface WAHAWebhookGroupJoin {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -3964,6 +4249,7 @@ export interface WAHAWebhookGroupLeave {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'
@@ -4025,6 +4311,7 @@ export interface WAHAWebhookStateChange {
     | 'group.v2.leave'
     | 'group.v2.update'
     | 'group.v2.participants'
+    | 'group.v2.participants.join-request'
     | 'presence.update'
     | 'poll.vote'
     | 'poll.vote.failed'

@@ -25,11 +25,13 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
+  BrazilianPhoneNumbersCacheConfig,
+  BrazilianPhoneNumbersAppConfig,
+  CallsAppChannelConfig,
+  CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
-  CallsAppChannelConfig,
-  CallsAppConfig,
   McpAppConfig,
   App,
   ReachoutTimelockData,
@@ -52,6 +54,8 @@ import {
   SessionCreateRequest,
   SessionDTO,
   SessionUpdateRequest,
+  SessionLogoutAppsOptions,
+  SessionLogoutRequest,
   SessionStartDeprecatedRequest,
   SessionStopDeprecatedRequest,
   SessionLogoutDeprecatedRequest,
@@ -76,6 +80,7 @@ import {
   VideoRemoteFile,
   VideoBinaryFile,
   MessageVideoRequest,
+  MessageStickerRequest,
   FileURL,
   FileContent,
   LinkPreviewData,
@@ -144,8 +149,11 @@ import {
   SubjectRequest,
   SettingsSecurityChangeInfo,
   SettingsMemberAddMode,
-  GroupParticipant,
+  SettingsMembershipApproval,
+  GroupJoinRequest,
   ParticipantsRequest,
+  GroupJoinRequestResult,
+  GroupParticipant,
   WAHASessionPresence,
   WAHAPresenceData,
   WAHAChatPresences,
@@ -160,6 +168,12 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
+  BrazilianPhoneMemoryCacheEntry,
+  BrazilianPhoneDbCacheEntry,
+  BrazilianPhoneMemoryCacheStats,
+  BrazilianPhoneDbCacheStats,
+  BrazilianPhoneCacheStatsResponse,
+  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -185,6 +199,8 @@ import {
   WebhookGroupV2Update,
   GroupV2ParticipantsEvent,
   WebhookGroupV2Participants,
+  GroupV2ParticipantsJoinRequestEvent,
+  WebhookGroupV2ParticipantsJoinRequest,
   WAHAWebhookPresenceUpdate,
   PollVote,
   MessageDestination,
@@ -309,16 +325,39 @@ export class Apps<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
       ...params,
     })
   /**
-   * No description
+   * @description Delete the app's stored data (database rows, caches) while keeping the app configured.
    *
    * @tags 🧩 Apps
-   * @name McpControllerPost
-   * @request POST:/mcp
+   * @name AppsControllerPurge
+   * @summary Purge app storage by app ID
+   * @request POST:/api/apps/{id}/purge
+   * @secure
    */
-  mcpControllerPost = (params: RequestParams = {}) =>
+  appsControllerPurge = (id: string, params: RequestParams = {}) =>
     this.request<void, any>({
-      path: `/mcp`,
+      path: `/api/apps/${id}/purge`,
       method: 'POST',
+      secure: true,
+      ...params,
+    })
+  /**
+   * @description Delete the unique app's stored data for the session. The app must be enabled.
+   *
+   * @tags 🧩 Apps
+   * @name AppsControllerPurgeUniqueApp
+   * @summary Purge app storage by app name and session
+   * @request POST:/api/apps/{app}/{session}/purge
+   * @secure
+   */
+  appsControllerPurgeUniqueApp = (
+    app: 'chatwoot' | 'calls' | 'mcp' | 'brazilian-phone-numbers',
+    session: string,
+    params: RequestParams = {},
+  ) =>
+    this.request<void, any>({
+      path: `/api/apps/${app}/${session}/purge`,
+      method: 'POST',
+      secure: true,
       ...params,
     })
 }

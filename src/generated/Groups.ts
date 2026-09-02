@@ -25,11 +25,13 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
+  BrazilianPhoneNumbersCacheConfig,
+  BrazilianPhoneNumbersAppConfig,
+  CallsAppChannelConfig,
+  CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
-  CallsAppChannelConfig,
-  CallsAppConfig,
   McpAppConfig,
   App,
   ReachoutTimelockData,
@@ -52,6 +54,8 @@ import {
   SessionCreateRequest,
   SessionDTO,
   SessionUpdateRequest,
+  SessionLogoutAppsOptions,
+  SessionLogoutRequest,
   SessionStartDeprecatedRequest,
   SessionStopDeprecatedRequest,
   SessionLogoutDeprecatedRequest,
@@ -76,6 +80,7 @@ import {
   VideoRemoteFile,
   VideoBinaryFile,
   MessageVideoRequest,
+  MessageStickerRequest,
   FileURL,
   FileContent,
   LinkPreviewData,
@@ -144,8 +149,11 @@ import {
   SubjectRequest,
   SettingsSecurityChangeInfo,
   SettingsMemberAddMode,
-  GroupParticipant,
+  SettingsMembershipApproval,
+  GroupJoinRequest,
   ParticipantsRequest,
+  GroupJoinRequestResult,
+  GroupParticipant,
   WAHASessionPresence,
   WAHAPresenceData,
   WAHAChatPresences,
@@ -160,6 +168,12 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
+  BrazilianPhoneMemoryCacheEntry,
+  BrazilianPhoneDbCacheEntry,
+  BrazilianPhoneMemoryCacheStats,
+  BrazilianPhoneDbCacheStats,
+  BrazilianPhoneCacheStatsResponse,
+  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -185,6 +199,8 @@ import {
   WebhookGroupV2Update,
   GroupV2ParticipantsEvent,
   WebhookGroupV2Participants,
+  GroupV2ParticipantsJoinRequestEvent,
+  WebhookGroupV2ParticipantsJoinRequest,
   WAHAWebhookPresenceUpdate,
   PollVote,
   MessageDestination,
@@ -629,6 +645,116 @@ export class Groups<SecurityDataType = unknown> extends HttpClient<SecurityDataT
       path: `/api/${session}/groups/${id}/settings/security/member-add-mode`,
       method: 'GET',
       secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Enables or disables admin approval for users requesting to join the group.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerSetMembershipApprovalMode
+   * @summary Update settings - approve new members
+   * @request PUT:/api/{session}/groups/{id}/settings/security/membership-approval
+   * @secure
+   */
+  groupsControllerSetMembershipApprovalMode = (
+    session: any,
+    id: string,
+    data: SettingsMembershipApproval,
+    params: RequestParams = {},
+  ) =>
+    this.request<boolean, any>({
+      path: `/api/${session}/groups/${id}/settings/security/membership-approval`,
+      method: 'PUT',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Returns whether admin approval is required for users requesting to join the group.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerGetMembershipApprovalMode
+   * @summary Get settings - approve new members
+   * @request GET:/api/{session}/groups/{id}/settings/security/membership-approval
+   * @secure
+   */
+  groupsControllerGetMembershipApprovalMode = (
+    session: any,
+    id: string,
+    params: RequestParams = {},
+  ) =>
+    this.request<SettingsMembershipApproval, any>({
+      path: `/api/${session}/groups/${id}/settings/security/membership-approval`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerGetGroupJoinRequests
+   * @summary Get pending requests to join the group
+   * @request GET:/api/{session}/groups/{id}/participants/join-requests
+   * @secure
+   */
+  groupsControllerGetGroupJoinRequests = (session: any, id: string, params: RequestParams = {}) =>
+    this.request<GroupJoinRequest[], any>({
+      path: `/api/${session}/groups/${id}/participants/join-requests`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerApproveGroupJoinRequests
+   * @summary Approve pending requests to join the group
+   * @request POST:/api/{session}/groups/{id}/participants/join-requests/approve
+   * @secure
+   */
+  groupsControllerApproveGroupJoinRequests = (
+    session: any,
+    id: string,
+    data: ParticipantsRequest,
+    params: RequestParams = {},
+  ) =>
+    this.request<GroupJoinRequestResult[], any>({
+      path: `/api/${session}/groups/${id}/participants/join-requests/approve`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * No description
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerRejectGroupJoinRequests
+   * @summary Reject pending requests to join the group
+   * @request POST:/api/{session}/groups/{id}/participants/join-requests/reject
+   * @secure
+   */
+  groupsControllerRejectGroupJoinRequests = (
+    session: any,
+    id: string,
+    data: ParticipantsRequest,
+    params: RequestParams = {},
+  ) =>
+    this.request<GroupJoinRequestResult[], any>({
+      path: `/api/${session}/groups/${id}/participants/join-requests/reject`,
+      method: 'POST',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       format: 'json',
       ...params,
     })

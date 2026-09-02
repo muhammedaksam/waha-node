@@ -25,11 +25,13 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
+  BrazilianPhoneNumbersCacheConfig,
+  BrazilianPhoneNumbersAppConfig,
+  CallsAppChannelConfig,
+  CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
-  CallsAppChannelConfig,
-  CallsAppConfig,
   McpAppConfig,
   App,
   ReachoutTimelockData,
@@ -52,6 +54,8 @@ import {
   SessionCreateRequest,
   SessionDTO,
   SessionUpdateRequest,
+  SessionLogoutAppsOptions,
+  SessionLogoutRequest,
   SessionStartDeprecatedRequest,
   SessionStopDeprecatedRequest,
   SessionLogoutDeprecatedRequest,
@@ -76,6 +80,7 @@ import {
   VideoRemoteFile,
   VideoBinaryFile,
   MessageVideoRequest,
+  MessageStickerRequest,
   FileURL,
   FileContent,
   LinkPreviewData,
@@ -144,8 +149,11 @@ import {
   SubjectRequest,
   SettingsSecurityChangeInfo,
   SettingsMemberAddMode,
-  GroupParticipant,
+  SettingsMembershipApproval,
+  GroupJoinRequest,
   ParticipantsRequest,
+  GroupJoinRequestResult,
+  GroupParticipant,
   WAHASessionPresence,
   WAHAPresenceData,
   WAHAChatPresences,
@@ -160,6 +168,12 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
+  BrazilianPhoneMemoryCacheEntry,
+  BrazilianPhoneDbCacheEntry,
+  BrazilianPhoneMemoryCacheStats,
+  BrazilianPhoneDbCacheStats,
+  BrazilianPhoneCacheStatsResponse,
+  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -185,6 +199,8 @@ import {
   WebhookGroupV2Update,
   GroupV2ParticipantsEvent,
   WebhookGroupV2Participants,
+  GroupV2ParticipantsJoinRequestEvent,
+  WebhookGroupV2ParticipantsJoinRequest,
   WAHAWebhookPresenceUpdate,
   PollVote,
   MessageDestination,
@@ -374,12 +390,10 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
       sortBy?: 'timestamp' | 'messageTimestamp'
       /** Sort order - <b>desc</b>ending (Z => A, New first) or <b>asc</b>ending (A => Z, Old first) */
       sortOrder?: 'desc' | 'asc'
-      /**
-       * Download media for messages
-       * @default true
-       * @example false
-       */
+      /** Download media for messages */
       downloadMedia?: boolean
+      /** Download only media with these mimetypes (prefix match) */
+      downloadMediaMimetypes?: string[]
       /**
        * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
        * @default true
@@ -472,12 +486,10 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
     chatId: string,
     messageId: string,
     query?: {
-      /**
-       * Download media for messages
-       * @default true
-       * @example true
-       */
+      /** Download media for messages */
       downloadMedia?: boolean
+      /** Download only media with these mimetypes (prefix match) */
+      downloadMediaMimetypes?: string[]
       /**
        * Merge LID (@lid) and phone-number (@c.us) chats referencing the same contact
        * @default true
