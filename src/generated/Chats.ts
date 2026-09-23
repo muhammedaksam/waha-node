@@ -25,14 +25,18 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
-  BrazilianPhoneNumbersCacheConfig,
+  PhoneNumbersCacheConfig,
+  ArgentinePhoneNumbersAppConfig,
   BrazilianPhoneNumbersAppConfig,
+  PhoneNumbersRuleConfig,
+  PhoneNumbersAppConfig,
   CallsAppChannelConfig,
   CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
   McpAppConfig,
+  MexicanPhoneNumbersAppConfig,
   App,
   ReachoutTimelockData,
   MessageCappingData,
@@ -168,12 +172,6 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
-  BrazilianPhoneMemoryCacheEntry,
-  BrazilianPhoneDbCacheEntry,
-  BrazilianPhoneMemoryCacheStats,
-  BrazilianPhoneDbCacheStats,
-  BrazilianPhoneCacheStatsResponse,
-  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -252,6 +250,7 @@ export class Chats<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
        * @example true
        */
       merge?: boolean
+      /** @default 20 */
       limit?: number
       offset?: number
     },

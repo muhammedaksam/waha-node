@@ -25,14 +25,18 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
-  BrazilianPhoneNumbersCacheConfig,
+  PhoneNumbersCacheConfig,
+  ArgentinePhoneNumbersAppConfig,
   BrazilianPhoneNumbersAppConfig,
+  PhoneNumbersRuleConfig,
+  PhoneNumbersAppConfig,
   CallsAppChannelConfig,
   CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
   McpAppConfig,
+  MexicanPhoneNumbersAppConfig,
   App,
   ReachoutTimelockData,
   MessageCappingData,
@@ -168,12 +172,6 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
-  BrazilianPhoneMemoryCacheEntry,
-  BrazilianPhoneDbCacheEntry,
-  BrazilianPhoneMemoryCacheStats,
-  BrazilianPhoneDbCacheStats,
-  BrazilianPhoneCacheStatsResponse,
-  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -350,7 +348,14 @@ export class Apps<SecurityDataType = unknown> extends HttpClient<SecurityDataTyp
    * @secure
    */
   appsControllerPurgeUniqueApp = (
-    app: 'chatwoot' | 'calls' | 'mcp' | 'brazilian-phone-numbers',
+    app:
+      | 'argentine-phone-numbers'
+      | 'brazilian-phone-numbers'
+      | 'chatwoot'
+      | 'calls'
+      | 'mcp'
+      | 'mexican-phone-numbers'
+      | 'phone-numbers',
     session: string,
     params: RequestParams = {},
   ) =>

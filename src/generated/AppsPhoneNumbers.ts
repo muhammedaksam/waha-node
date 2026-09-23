@@ -25,14 +25,18 @@ import {
   ApiKeyRequest,
   ApiKeyDTO,
   ScopedApiKeyRequest,
-  BrazilianPhoneNumbersCacheConfig,
+  PhoneNumbersCacheConfig,
+  ArgentinePhoneNumbersAppConfig,
   BrazilianPhoneNumbersAppConfig,
+  PhoneNumbersRuleConfig,
+  PhoneNumbersAppConfig,
   CallsAppChannelConfig,
   CallsAppConfig,
   ChatWootCommandsConfig,
   ChatWootConversationsConfig,
   ChatWootAppConfig,
   McpAppConfig,
+  MexicanPhoneNumbersAppConfig,
   App,
   ReachoutTimelockData,
   MessageCappingData,
@@ -168,12 +172,6 @@ import {
   StopResponse,
   VoiceFileDTO,
   VideoFileDTO,
-  BrazilianPhoneMemoryCacheEntry,
-  BrazilianPhoneDbCacheEntry,
-  BrazilianPhoneMemoryCacheStats,
-  BrazilianPhoneDbCacheStats,
-  BrazilianPhoneCacheStatsResponse,
-  BrazilianPhoneCachePurgeResponse,
   SessionStatusPoint,
   WASessionStatusBody,
   WAHAWebhookSessionStatus,
@@ -229,19 +227,17 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class AppsBrazilianPhoneNumbers<
-  SecurityDataType = unknown,
-> extends HttpClient<SecurityDataType> {
+export class AppsPhoneNumbers<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * @description Entries from the in-memory cache tier of the running session, sorted by key. The session must be running.
    *
-   * @tags 🧩 Apps: Brazilian Phone Numbers
-   * @name BrazilianPhoneNumbersControllerMemory
+   * @tags 🧩 Apps: Phone Numbers
+   * @name PhoneNumbersControllerMemory
    * @summary List in-memory cache entries
-   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/memory
+   * @request GET:/api/apps/phone-numbers/{session}/cache/memory
    * @secure
    */
-  brazilianPhoneNumbersControllerMemory = (
+  phoneNumbersControllerMemory = (
     session: any,
     query?: {
       limit?: number
@@ -249,24 +245,23 @@ export class AppsBrazilianPhoneNumbers<
     },
     params: RequestParams = {},
   ) =>
-    this.request<BrazilianPhoneMemoryCacheEntry[], any>({
-      path: `/api/apps/brazilian-phone-numbers/${session}/cache/memory`,
+    this.request<void, any>({
+      path: `/api/apps/phone-numbers/${session}/cache/memory`,
       method: 'GET',
       query: query,
       secure: true,
-      format: 'json',
       ...params,
     })
   /**
    * @description Entries from the persistent (database) cache tier, sorted by id. Works even when the session is stopped.
    *
-   * @tags 🧩 Apps: Brazilian Phone Numbers
-   * @name BrazilianPhoneNumbersControllerDb
+   * @tags 🧩 Apps: Phone Numbers
+   * @name PhoneNumbersControllerDb
    * @summary List persistent cache entries
-   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/db
+   * @request GET:/api/apps/phone-numbers/{session}/cache/db
    * @secure
    */
-  brazilianPhoneNumbersControllerDb = (
+  phoneNumbersControllerDb = (
     session: any,
     query?: {
       limit?: number
@@ -274,46 +269,43 @@ export class AppsBrazilianPhoneNumbers<
     },
     params: RequestParams = {},
   ) =>
-    this.request<BrazilianPhoneDbCacheEntry[], any>({
-      path: `/api/apps/brazilian-phone-numbers/${session}/cache/db`,
+    this.request<void, any>({
+      path: `/api/apps/phone-numbers/${session}/cache/db`,
       method: 'GET',
       query: query,
       secure: true,
-      format: 'json',
       ...params,
     })
   /**
    * @description Stats for both cache tiers. "memory" is null when the session is not running, "db" is null when the persistent cache is disabled.
    *
-   * @tags 🧩 Apps: Brazilian Phone Numbers
-   * @name BrazilianPhoneNumbersControllerStats
+   * @tags 🧩 Apps: Phone Numbers
+   * @name PhoneNumbersControllerStats
    * @summary Get cache stats
-   * @request GET:/api/apps/brazilian-phone-numbers/{session}/cache/stats
+   * @request GET:/api/apps/phone-numbers/{session}/cache/stats
    * @secure
    */
-  brazilianPhoneNumbersControllerStats = (session: any, params: RequestParams = {}) =>
-    this.request<BrazilianPhoneCacheStatsResponse, any>({
-      path: `/api/apps/brazilian-phone-numbers/${session}/cache/stats`,
+  phoneNumbersControllerStats = (session: any, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/apps/phone-numbers/${session}/cache/stats`,
       method: 'GET',
       secure: true,
-      format: 'json',
       ...params,
     })
   /**
    * @description Removes ALL persistent cache entries and clears the in-memory tier (the in-memory tier only when the session is running).
    *
-   * @tags 🧩 Apps: Brazilian Phone Numbers
-   * @name BrazilianPhoneNumbersControllerPurge
+   * @tags 🧩 Apps: Phone Numbers
+   * @name PhoneNumbersControllerPurge
    * @summary Purge the resolved-numbers cache
-   * @request DELETE:/api/apps/brazilian-phone-numbers/{session}/cache/purge
+   * @request DELETE:/api/apps/phone-numbers/{session}/cache/purge
    * @secure
    */
-  brazilianPhoneNumbersControllerPurge = (session: any, params: RequestParams = {}) =>
-    this.request<BrazilianPhoneCachePurgeResponse, any>({
-      path: `/api/apps/brazilian-phone-numbers/${session}/cache/purge`,
+  phoneNumbersControllerPurge = (session: any, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/apps/phone-numbers/${session}/cache/purge`,
       method: 'DELETE',
       secure: true,
-      format: 'json',
       ...params,
     })
 }

@@ -153,7 +153,7 @@ export interface ScopedApiKeyRequest {
   session: string
 }
 
-export interface BrazilianPhoneNumbersCacheConfig {
+export interface PhoneNumbersCacheConfig {
   /**
    * TTL for resolved numbers in the in-memory cache tier, as a duration string.
    * @default "24h"
@@ -173,9 +173,9 @@ export interface BrazilianPhoneNumbersCacheConfig {
   persistentTtl?: string
 }
 
-export interface BrazilianPhoneNumbersAppConfig {
+export interface ArgentinePhoneNumbersAppConfig {
   /**
-   * When a Brazilian mobile number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
+   * When a number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
    * @default false
    */
   strict?: boolean
@@ -188,7 +188,61 @@ export interface BrazilianPhoneNumbersAppConfig {
    * Cache tuning for resolved numbers.
    * @default {"memoryTtl":"24h","persistent":true,"persistentTtl":"31d"}
    */
-  cache?: BrazilianPhoneNumbersCacheConfig
+  cache?: PhoneNumbersCacheConfig
+}
+
+export interface BrazilianPhoneNumbersAppConfig {
+  /**
+   * When a number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
+   * @default false
+   */
+  strict?: boolean
+  /**
+   * Allow the WhatsApp server lookup tier for numbers the cache and the local contact store cannot resolve. When false, unresolved numbers are sent as provided.
+   * @default true
+   */
+  lookup?: boolean
+  /**
+   * Cache tuning for resolved numbers.
+   * @default {"memoryTtl":"24h","persistent":true,"persistentTtl":"31d"}
+   */
+  cache?: PhoneNumbersCacheConfig
+}
+
+export interface PhoneNumbersRuleConfig {
+  /**
+   * Handle numbers (digits only, no + or @c.us) matching this regexp - resolve them to the chat id WhatsApp knows.
+   * @example "^52"
+   */
+  regexp: string
+  /**
+   * Also check the replaced form ("^52(\d{10})$" => "521$1").
+   * @example "521$1"
+   */
+  replace?: string
+}
+
+export interface PhoneNumbersAppConfig {
+  /**
+   * When a number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
+   * @default false
+   */
+  strict?: boolean
+  /**
+   * Allow the WhatsApp server lookup tier for numbers the cache and the local contact store cannot resolve. When false, unresolved numbers are sent as provided.
+   * @default true
+   */
+  lookup?: boolean
+  /**
+   * Cache tuning for resolved numbers.
+   * @default {"memoryTtl":"24h","persistent":true,"persistentTtl":"31d"}
+   */
+  cache?: PhoneNumbersCacheConfig
+  /**
+   * Which numbers to handle, first matching rule wins. No rules - handle every number.
+   * @example [{"regexp":"^52(\\d{10})$","replace":"521$1"}]
+   */
+  rules?: PhoneNumbersRuleConfig[]
 }
 
 export interface CallsAppChannelConfig {
@@ -237,6 +291,16 @@ export interface ChatWootConversationsConfig {
    * @default true
    */
   markAsRead?: boolean
+  /**
+   * Update Chatwoot message status (delivered/read) for messages sent from Chatwoot using WhatsApp acks. Disabled by default
+   * @default false
+   */
+  syncMessageStatus?: boolean
+  /**
+   * How to show messages sent from WhatsApp (not from ChatWoot): 'private-note' (default) or 'message' - a regular outgoing message, as if an agent sent it.
+   * @default "private-note"
+   */
+  outgoing?: 'private-note' | 'message'
   sort: 'activity_newest' | 'created_newest' | 'created_oldest' | 'activity_oldest'
   status: ('open' | 'pending' | 'snoozed' | 'resolved')[] | null
 }
@@ -271,6 +335,24 @@ export interface McpAppConfig {
   key?: string | null
 }
 
+export interface MexicanPhoneNumbersAppConfig {
+  /**
+   * When a number is confirmed NOT to exist on WhatsApp: false (default) - warn and send the best-guess anyway; true - reject the send with 422. Strict trades delivery for certainty and can block valid sends on lookup false-negatives (throttling).
+   * @default false
+   */
+  strict?: boolean
+  /**
+   * Allow the WhatsApp server lookup tier for numbers the cache and the local contact store cannot resolve. When false, unresolved numbers are sent as provided.
+   * @default true
+   */
+  lookup?: boolean
+  /**
+   * Cache tuning for resolved numbers.
+   * @default {"memoryTtl":"24h","persistent":true,"persistentTtl":"31d"}
+   */
+  cache?: PhoneNumbersCacheConfig
+}
+
 export interface App {
   /**
    * Enable or disable this app without deleting it. If omitted, treated as enabled (true).
@@ -279,7 +361,14 @@ export interface App {
   enabled?: boolean
   id: string
   session: string
-  app: 'chatwoot' | 'calls' | 'mcp' | 'brazilian-phone-numbers'
+  app:
+    | 'argentine-phone-numbers'
+    | 'brazilian-phone-numbers'
+    | 'chatwoot'
+    | 'calls'
+    | 'mcp'
+    | 'mexican-phone-numbers'
+    | 'phone-numbers'
   config: object
 }
 
@@ -714,6 +803,11 @@ export interface MessageTextRequest {
    */
   id?: string
   /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
+  /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
    */
@@ -860,6 +954,11 @@ export interface MessageImageRequest {
   chatId: string
   file: RemoteFile | BinaryFile
   /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
+  /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
    */
@@ -873,6 +972,11 @@ export interface MessageFileRequest {
   /** @example "11111111111@c.us" */
   chatId: string
   file: RemoteFile | BinaryFile
+  /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
   /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
@@ -966,6 +1070,11 @@ export interface MessageVideoRequest {
   /** @example "11111111111@c.us" */
   chatId: string
   file: VideoRemoteFile | VideoBinaryFile
+  /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
   /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
@@ -1183,7 +1292,10 @@ export interface MessageStarRequest {
 }
 
 export interface MessagePoll {
-  /** @example "How are you?" */
+  /**
+   * @maxLength 255
+   * @example "How are you?"
+   */
   name: string
   /** @example ["Awesome!","Good!","Not bad!"] */
   options: string[]
@@ -1344,6 +1456,11 @@ export interface MessageReplyRequest {
    */
   id?: string
   /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
+  /**
    * The ID of the message to reply to - false_11111111111@c.us_AAAAAAAAAAAAAAAAAAAA
    * @example null
    */
@@ -1432,6 +1549,11 @@ export interface PinMessageRequest {
 }
 
 export interface EditMessageRequest {
+  /**
+   * Chat IDs to mention in the message. Use ["all"] to mention all participants in a group.
+   * @example null
+   */
+  mentions?: string[]
   /** @default "Hello, world!" */
   text: string
   /** @default true */
@@ -2045,58 +2167,6 @@ export interface VideoFileDTO {
    * @example null
    */
   data?: string
-}
-
-export interface BrazilianPhoneMemoryCacheEntry {
-  /** Phone number digits the cache entry is keyed by */
-  key: string
-  /** Resolved chat id. An empty string is a confirmed-negative - the number is verified NOT to exist on WhatsApp. */
-  chatId: string
-  /**
-   * When the entry expires; null when it has no TTL
-   * @format date-time
-   */
-  expiresAt: string | null
-}
-
-export interface BrazilianPhoneDbCacheEntry {
-  /** Record id */
-  id: number
-  /** Phone number digits the cache entry is keyed by */
-  key: string
-  /** Resolved chat id */
-  chatId: string
-  /** Whether the resolution was verified against WhatsApp */
-  verified: boolean
-  /**
-   * When the number was resolved
-   * @format date-time
-   */
-  resolvedAt: string
-}
-
-export interface BrazilianPhoneMemoryCacheStats {
-  /** Number of entries in the in-memory cache */
-  total: number
-}
-
-export interface BrazilianPhoneDbCacheStats {
-  /** Total number of entries in the persistent cache */
-  total: number
-  /** Number of entries verified against WhatsApp */
-  verified: number
-}
-
-export interface BrazilianPhoneCacheStatsResponse {
-  /** In-memory cache stats; null when the session is not running */
-  memory: BrazilianPhoneMemoryCacheStats | null
-  /** Persistent cache stats; null when the persistent cache is disabled */
-  db: BrazilianPhoneDbCacheStats | null
-}
-
-export interface BrazilianPhoneCachePurgeResponse {
-  /** Number of entries removed from the persistent cache */
-  deleted: number
 }
 
 export interface SessionStatusPoint {

@@ -227,116 +227,87 @@ import {
   WAHAWebhookStateChange,
 } from './data-contracts'
 
-export class Status<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+export class AppsPhoneNumbersArgentina<
+  SecurityDataType = unknown,
+> extends HttpClient<SecurityDataType> {
   /**
-   * No description
+   * @description Entries from the in-memory cache tier of the running session, sorted by key. The session must be running.
    *
-   * @tags 🟢 Status
-   * @name StatusControllerSendTextStatus
-   * @summary Send text status
-   * @request POST:/api/{session}/status/text
+   * @tags 🧩 Apps: Phone Numbers: Argentina
+   * @name ArgentinePhoneNumbersControllerMemory
+   * @summary List in-memory cache entries
+   * @request GET:/api/apps/argentine-phone-numbers/{session}/cache/memory
    * @secure
    */
-  statusControllerSendTextStatus = (session: any, data: TextStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/text`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendImageStatus
-   * @summary Send image status
-   * @request POST:/api/{session}/status/image
-   * @secure
-   */
-  statusControllerSendImageStatus = (session: any, data: ImageStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/image`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVoiceStatus
-   * @summary Send voice status
-   * @request POST:/api/{session}/status/voice
-   * @secure
-   */
-  statusControllerSendVoiceStatus = (session: any, data: VoiceStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/voice`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerSendVideoStatus
-   * @summary Send video status
-   * @request POST:/api/{session}/status/video
-   * @secure
-   */
-  statusControllerSendVideoStatus = (session: any, data: VideoStatus, params: RequestParams = {}) =>
-    this.request<void, any>({
-      path: `/api/${session}/status/video`,
-      method: 'POST',
-      body: data,
-      secure: true,
-      type: ContentType.Json,
-      ...params,
-    })
-  /**
-   * No description
-   *
-   * @tags 🟢 Status
-   * @name StatusControllerDeleteStatus
-   * @summary DELETE sent status
-   * @request POST:/api/{session}/status/delete
-   * @secure
-   */
-  statusControllerDeleteStatus = (
+  argentinePhoneNumbersControllerMemory = (
     session: any,
-    data: DeleteStatusRequest,
+    query?: {
+      limit?: number
+      offset?: number
+    },
     params: RequestParams = {},
   ) =>
     this.request<void, any>({
-      path: `/api/${session}/status/delete`,
-      method: 'POST',
-      body: data,
+      path: `/api/apps/argentine-phone-numbers/${session}/cache/memory`,
+      method: 'GET',
+      query: query,
       secure: true,
-      type: ContentType.Json,
       ...params,
     })
   /**
-   * No description
+   * @description Entries from the persistent (database) cache tier, sorted by id. Works even when the session is stopped.
    *
-   * @tags 🟢 Status
-   * @name StatusControllerGetNewMessageId
-   * @summary Generate message ID you can use to batch contacts
-   * @request GET:/api/{session}/status/new-message-id
+   * @tags 🧩 Apps: Phone Numbers: Argentina
+   * @name ArgentinePhoneNumbersControllerDb
+   * @summary List persistent cache entries
+   * @request GET:/api/apps/argentine-phone-numbers/{session}/cache/db
    * @secure
    */
-  statusControllerGetNewMessageId = (session: any, params: RequestParams = {}) =>
-    this.request<NewMessageIDResponse, any>({
-      path: `/api/${session}/status/new-message-id`,
+  argentinePhoneNumbersControllerDb = (
+    session: any,
+    query?: {
+      limit?: number
+      offset?: number
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<void, any>({
+      path: `/api/apps/argentine-phone-numbers/${session}/cache/db`,
+      method: 'GET',
+      query: query,
+      secure: true,
+      ...params,
+    })
+  /**
+   * @description Stats for both cache tiers. "memory" is null when the session is not running, "db" is null when the persistent cache is disabled.
+   *
+   * @tags 🧩 Apps: Phone Numbers: Argentina
+   * @name ArgentinePhoneNumbersControllerStats
+   * @summary Get cache stats
+   * @request GET:/api/apps/argentine-phone-numbers/{session}/cache/stats
+   * @secure
+   */
+  argentinePhoneNumbersControllerStats = (session: any, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/apps/argentine-phone-numbers/${session}/cache/stats`,
       method: 'GET',
       secure: true,
-      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Removes ALL persistent cache entries and clears the in-memory tier (the in-memory tier only when the session is running).
+   *
+   * @tags 🧩 Apps: Phone Numbers: Argentina
+   * @name ArgentinePhoneNumbersControllerPurge
+   * @summary Purge the resolved-numbers cache
+   * @request DELETE:/api/apps/argentine-phone-numbers/{session}/cache/purge
+   * @secure
+   */
+  argentinePhoneNumbersControllerPurge = (session: any, params: RequestParams = {}) =>
+    this.request<void, any>({
+      path: `/api/apps/argentine-phone-numbers/${session}/cache/purge`,
+      method: 'DELETE',
+      secure: true,
       ...params,
     })
 }
