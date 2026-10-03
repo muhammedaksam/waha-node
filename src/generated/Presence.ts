@@ -153,6 +153,7 @@ import {
   SubjectRequest,
   SettingsSecurityChangeInfo,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   GroupJoinRequest,
   ParticipantsRequest,

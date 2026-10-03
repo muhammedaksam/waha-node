@@ -1935,6 +1935,11 @@ export interface SettingsMemberAddMode {
   membersCanAddNewMember: boolean
 }
 
+export interface SettingsMemberShareHistoryMode {
+  /** @default true */
+  membersCanShareHistory: boolean
+}
+
 export interface SettingsMembershipApproval {
   /** @default false */
   newMembersApprovalRequired: boolean

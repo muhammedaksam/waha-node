@@ -153,6 +153,7 @@ import {
   SubjectRequest,
   SettingsSecurityChangeInfo,
   SettingsMemberAddMode,
+  SettingsMemberShareHistoryMode,
   SettingsMembershipApproval,
   GroupJoinRequest,
   ParticipantsRequest,
@@ -641,6 +642,51 @@ export class Groups<SecurityDataType = unknown> extends HttpClient<SecurityDataT
   groupsControllerGetMemberAddMode = (session: any, id: string, params: RequestParams = {}) =>
     this.request<SettingsMemberAddMode, any>({
       path: `/api/${session}/groups/${id}/settings/security/member-add-mode`,
+      method: 'GET',
+      secure: true,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description Updates the group settings for whether members can share message history with new members, or only admins can.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerSetMemberShareHistoryMode
+   * @summary Update settings - members can send message history to new members
+   * @request PUT:/api/{session}/groups/{id}/settings/security/member-share-history-mode
+   * @secure
+   */
+  groupsControllerSetMemberShareHistoryMode = (
+    session: any,
+    id: string,
+    data: SettingsMemberShareHistoryMode,
+    params: RequestParams = {},
+  ) =>
+    this.request<boolean, any>({
+      path: `/api/${session}/groups/${id}/settings/security/member-share-history-mode`,
+      method: 'PUT',
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: 'json',
+      ...params,
+    })
+  /**
+   * @description The group settings for whether members can share message history with new members, or only admins can.
+   *
+   * @tags 👥 Groups
+   * @name GroupsControllerGetMemberShareHistoryMode
+   * @summary Get settings - members can send message history to new members
+   * @request GET:/api/{session}/groups/{id}/settings/security/member-share-history-mode
+   * @secure
+   */
+  groupsControllerGetMemberShareHistoryMode = (
+    session: any,
+    id: string,
+    params: RequestParams = {},
+  ) =>
+    this.request<SettingsMemberShareHistoryMode, any>({
+      path: `/api/${session}/groups/${id}/settings/security/member-share-history-mode`,
       method: 'GET',
       secure: true,
       format: 'json',
